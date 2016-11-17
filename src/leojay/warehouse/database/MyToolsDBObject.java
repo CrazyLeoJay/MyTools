@@ -180,7 +180,7 @@ public abstract class MyToolsDBObject implements DBListener {
                         create_table_sql += ", `" + CREATE_TIME + "` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP";
                     }
                     if (isUpdateTimeField) {
-                        create_table_sql += ", `" + UPDATE_TIME + "` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP ";
+                        create_table_sql += ", `" + UPDATE_TIME + "` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ";
                     }
 
                     create_table_sql += ", " + "PRIMARY KEY (`" + UNId_ARG + "`)) " +
@@ -394,7 +394,7 @@ public abstract class MyToolsDBObject implements DBListener {
         } while (!sn.equals(objectClass.getName()));
 
         final String write_sql = "INSERT INTO `" + this.getTableName() + "` (`" + UNId_ARG + "`, " + sql_item +
-                ") VALUES (" + uniqueId + "," + sql_value + ");";
+                ", " + CREATE_TIME + ", " + UPDATE_TIME + ") VALUES (" + uniqueId + "," + sql_value + ", NOW(), NOW());";
 
         connect.connect(new OnDBSQLUpdateListener() {
             @Override

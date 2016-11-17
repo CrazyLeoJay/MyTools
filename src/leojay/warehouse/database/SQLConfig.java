@@ -1,8 +1,5 @@
 package leojay.warehouse.database;
 
-import leojay.warehouse.tools.FileException;
-import leojay.warehouse.tools.MyToolsException;
-import leojay.warehouse.tools.QLog;
 import leojay.warehouse.tools.ReadProperties;
 
 import java.util.Properties;
@@ -27,56 +24,50 @@ public class SQLConfig {
     private static boolean isHaveConfig = false;
 
     public SQLConfig(final String url, final String name) {
-        try {
-            ReadProperties config = new ReadProperties(new ReadProperties.InitConfig() {
-                @Override
-                public String FileName() {
-                    String s = "dbconfig";
-                    if (name != null && !name.equals("")) {
-                        s = name;
-                    }
-                    return s;
+        ReadProperties dbconfig = new ReadProperties(new ReadProperties.InitConfig() {
+            @Override
+            public String FileName() {
+                String s = "dbconfig";
+                if (name != null && !name.equals("")) {
+                    s = name;
                 }
-
-                @Override
-                public String DefaultFileName() {
-                    return null;
-                }
-
-                @Override
-                public String FileUrl() {
-                    return url;
-                }
-
-                @Override
-                public String DefaultFileUrl() {
-                    return "/leojay/warehouse/defaultConfig";
-                }
-
-            });
-            Properties dbconfig = config.initConfig();
-            if (dbconfig != null) {
-                isHaveConfig = true;
-                DB_Driver = dbconfig.getProperty("DB_Driver");
-                DB_name = dbconfig.getProperty("DB_name");
-                String PORT = dbconfig.getProperty("PORT");
-                String DB_CHARACTER = dbconfig.getProperty("DB_CHARACTER");
-                String DB_URL = dbconfig.getProperty("DB_URL");
-                DB_url = "jdbc:mysql://" + DB_URL + ":" + PORT + "/" + DB_name +
-                        "?useUnicode=true&characterEncoding=" + DB_CHARACTER;
-                USER_NAME = dbconfig.getProperty("DB_USER_NAME");
-                PASSWORD = dbconfig.getProperty("DB_PASSWORD");
-            } else {
-                throw new FileException("文件没有找到，请重新执行一遍程序");
+                return s;
             }
-        } catch (FileException e) {
-            QLog.w(this, "文件没有找到，请重新执行一遍程序");
-            e.printStackTrace();
-        } catch (MyToolsException e) {
-            isHaveConfig = false;
-            QLog.e(this, "没有读取到配置文件！");
-            e.printStackTrace();
-        }
+
+            @Override
+            public String FileUrl() {
+                return url;
+            }
+
+            @Override
+            public ReadProperties.InputMode UrlMode() {
+                return null;
+            }
+
+            @Override
+            public Properties setDefaultProperties() {
+                Properties properties = new Properties();
+                properties.setProperty("DB_USER_NAME", "username");
+                properties.setProperty("DB_Driver", "com.mysql.jdbc.Driver");
+                properties.setProperty("DB_PASSWORD", "you password");
+                properties.setProperty("PORT", "3306");
+                properties.setProperty("DB_name", "you database name");
+                properties.setProperty("DB_CHARACTER", "UTF-8");
+                properties.setProperty("DB_URL", "localhost");
+                return properties;
+            }
+
+        });
+        isHaveConfig = true;
+        DB_Driver = dbconfig.getProperty("DB_Driver");
+        DB_name = dbconfig.getProperty("DB_name");
+        String PORT = dbconfig.getProperty("PORT");
+        String DB_CHARACTER = dbconfig.getProperty("DB_CHARACTER");
+        String DB_URL = dbconfig.getProperty("DB_URL");
+        DB_url = "jdbc:mysql://" + DB_URL + ":" + PORT + "/" + DB_name +
+                "?useUnicode=true&characterEncoding=" + DB_CHARACTER;
+        USER_NAME = dbconfig.getProperty("DB_USER_NAME");
+        PASSWORD = dbconfig.getProperty("DB_PASSWORD");
 
     }
 

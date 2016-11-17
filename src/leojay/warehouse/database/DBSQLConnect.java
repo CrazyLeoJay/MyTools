@@ -67,13 +67,14 @@ public class DBSQLConnect implements DBSQLHelp {
      */
     @Override
     public void connect(final OnDBSQLInsertListener listener){
-        EmptyException(listener);
+                    final String sqlString = listener.setSQLString();
+        EmptyException(sqlString);
         connect(new OnConnectListener() {
             @Override
             public void done(Connection connection) throws SQLException {
                 if (connection != null) {
-                    if (!listener.setSQLString().isEmpty()) {
-                        PreparedStatement ps = connection.prepareStatement(listener.setSQLString());
+                    if (!sqlString.isEmpty()) {
+                        PreparedStatement ps = connection.prepareStatement(sqlString);
                         boolean execute = ps.execute();
                         listener.onInsert(execute);
                     }
@@ -93,14 +94,14 @@ public class DBSQLConnect implements DBSQLHelp {
      */
     @Override
     public void connect(final OnDBSQLUpdateListener listener) {
-        EmptyException(listener);
+                    final String sqlString = listener.setSQLString();
+        EmptyException(sqlString);
         connect(new OnConnectListener() {
             @Override
             public void done(Connection connection) throws SQLException {
                 if (connection != null) {
-                    String s = listener.setSQLString();
-                    if (!s.isEmpty()) {
-                        PreparedStatement ps = connection.prepareStatement(s);
+                    if (!sqlString.isEmpty()) {
+                        PreparedStatement ps = connection.prepareStatement(sqlString);
                         int i = ps.executeUpdate();
                         listener.onUpdate(i);
                     }
@@ -120,13 +121,14 @@ public class DBSQLConnect implements DBSQLHelp {
      */
     @Override
     public void connect(final OnDBSQLQueryListener listener) {
-        EmptyException(listener);
+        final String sqlString = listener.setSQLString();
+        EmptyException(sqlString);
         connect(new OnConnectListener() {
             @Override
             public void done(Connection connection) throws SQLException {
                 if (connection != null) {
-                    if (!listener.setSQLString().isEmpty()) {
-                        PreparedStatement ps = connection.prepareStatement(listener.setSQLString());
+                    if (!sqlString.isEmpty()) {
+                        PreparedStatement ps = connection.prepareStatement(sqlString);
                         ResultSet execute = ps.executeQuery();
                         listener.onQuery(execute);
                     }
@@ -167,8 +169,8 @@ public class DBSQLConnect implements DBSQLHelp {
         String onError(String error);
     }
 
-    private void EmptyException(DBSQLListener listener){
-        if (listener.setSQLString() == null || listener.setSQLString().equals("")) try {
+    private void EmptyException(String sql){
+        if (sql == null || sql.equals("")) try {
             throw new MyToolsException("sql语句不能为空！！！");
         } catch (MyToolsException e) {
             QLog.e(this, QLOG_KEY, e.getMessage());

@@ -15,7 +15,8 @@ public final class MD5 {
         String result = null;
         try {
             MessageDigest md = MessageDigest.getInstance("MD5");
-            md.update(token.getBytes());
+            byte[] bytes = token.getBytes();
+            md.update(bytes);
             byte b[] = md.digest();
 
             int i;
