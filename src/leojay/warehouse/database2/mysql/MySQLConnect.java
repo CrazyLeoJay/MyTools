@@ -1,5 +1,7 @@
-package leojay.warehouse.database2;
+package leojay.warehouse.database2.mysql;
 
+import leojay.warehouse.database2.base.MyConfig;
+import leojay.warehouse.database2.base.MyConnection;
 import leojay.warehouse.tools.QLog;
 
 import java.sql.Connection;
@@ -12,12 +14,12 @@ import java.sql.SQLException;
  * author:leojay
  * time:16/11/30__13:18
  */
-public class MySQLConnect implements MyConnection {
+class MySQLConnect implements MyConnection {
 
     private MyConfig config;
-    public static final String QLOG_KEY = "MySQLConnect.class";
+    private static final String QLOG_KEY = "MySQLConnect.class";
 
-    public MySQLConnect(MyConfig config) {
+    MySQLConnect(MyConfig config) {
         this.config = config;
     }
 

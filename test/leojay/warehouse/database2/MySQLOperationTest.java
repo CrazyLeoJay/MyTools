@@ -1,7 +1,11 @@
 package leojay.warehouse.database2;
 
+import leojay.warehouse.database2.base.MyOperation;
+import leojay.warehouse.database2.base.SelectMode;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.util.List;
 
 /**
  * <p>
@@ -25,17 +29,25 @@ public class MySQLOperationTest {
 
     @Test
     public void writeData() throws Exception {
-
+        apple.setName("hello");
+//        apple.setAge("220");
+        apple.writeData();
     }
 
     @Test
     public void deleteData() throws Exception {
+        apple = new Apple();
 
     }
 
     @Test
     public void selectData() throws Exception {
-
+        apple.selectData(Apple.class, SelectMode.OR, new MyOperation.OnResultListener<Apple>() {
+            @Override
+            public void result(List<Apple> result) {
+                System.out.println(result.size());
+            }
+        });
     }
 
     @Test

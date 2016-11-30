@@ -45,7 +45,7 @@ public final class QLog {
      * @param arg message 或 key\message
      */
     public static <T> void w(T t, String... arg) {
-        setMessage(t, "warning", arg);
+        setMessage(t, "warn", arg);
     }
 
 
@@ -79,7 +79,7 @@ public final class QLog {
             arg = "(" + key + ")";
         }
         String result = "[" + data + "]" +
-                " package: " + page +
+//                " package: " + page +
                 " \\|/ type:" + type +
                 "_ " + arg + "(" + ste.getFileName() + " :" + ste.getLineNumber() + "): " + message;
         System.out.println(result);

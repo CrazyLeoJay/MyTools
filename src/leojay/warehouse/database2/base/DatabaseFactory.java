@@ -1,4 +1,4 @@
-package leojay.warehouse.database2;
+package leojay.warehouse.database2.base;
 
 /**
  * 数据库工厂类

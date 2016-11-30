@@ -1,5 +1,6 @@
-package leojay.warehouse.database2;
+package leojay.warehouse.database2.mysql;
 
+import leojay.warehouse.database2.base.MyConfig;
 import leojay.warehouse.tools.ReadProperties;
 
 import java.util.Properties;
@@ -10,15 +11,15 @@ import java.util.Properties;
  * author:leojay
  * time:16/11/30__13:05
  */
-public class MySQLMyConfig implements MyConfig {
-    String DB_Driver;
-    String DB_name;
-    String DB_url;
+class MySQLMyConfig implements MyConfig {
+    private String DB_Driver;
+    private String DB_name;
+    private String DB_url;
 
-    String USER_NAME;
-    String PASSWORD;
+    private String USER_NAME;
+    private String PASSWORD;
     private static boolean isHaveConfig = false;
-    public MySQLMyConfig(final String url, final String name) {
+    MySQLMyConfig(final String url, final String name) {
         ReadProperties dbconfig = new ReadProperties(new ReadProperties.InitConfig() {
             @Override
             public String FileName() {

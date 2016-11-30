@@ -1,4 +1,6 @@
-package leojay.warehouse.database2;
+package leojay.warehouse.database2.mysql;
+
+import leojay.warehouse.database2.base.*;
 
 /**
  * package:leojay.warehouse.database2
@@ -6,7 +8,7 @@ package leojay.warehouse.database2;
  * author:leojay
  * time:16/11/25__16:33
  */
-public class MySQLFactory<F extends DatabaseObject> extends DatabaseFactory<F> {
+class MySQLFactory<F extends DatabaseObject> extends DatabaseFactory<F> {
 
     @Override
     public MyConfig createConfig() {
