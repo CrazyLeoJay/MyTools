@@ -14,7 +14,7 @@ import java.sql.SQLException;
  * author:leojay
  * time:16/11/30__13:18
  */
-class MySQLConnect implements MyConnection {
+class MySQLConnect implements MyConnection<Connection> {
 
     private MyConfig config;
     private static final String QLOG_KEY = "MySQLConnect.class";
@@ -24,7 +24,7 @@ class MySQLConnect implements MyConnection {
     }
 
     @Override
-    public void connect(OnConnectListener listener) {
+    public void connect(OnConnectListener<Connection> listener) {
         if (config.isHaveConfig()) {
             try {
                 Connection conn = null;
@@ -82,4 +82,6 @@ class MySQLConnect implements MyConnection {
             }
         }
     }
+
+
 }

@@ -1,13 +1,12 @@
 package leojay.warehouse.database2.mysql;
 
-import leojay.warehouse.database2.base.DatabaseObject;
-import leojay.warehouse.database2.base.MyConnection;
-import leojay.warehouse.database2.base.MyOperation;
-import leojay.warehouse.database2.base.SelectMode;
+import leojay.warehouse.database2.base.*;
 import leojay.warehouse.tools.MyToolsException;
 import leojay.warehouse.tools.QLog;
 
 import java.lang.reflect.Field;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -22,7 +21,7 @@ import java.util.List;
  * time:16/11/30__13:41<br/>
  * </p>
  */
-class MySQLOperation<F extends DatabaseObject> extends MyOperation<F> {
+class MySQLOperation<F extends DatabaseObject> extends MyOperation<F, OnResponseListener> {
     private static final String QLOG_KEY = "MySQLOperation.class";
 
     //判断是否建立数据表
@@ -34,9 +33,66 @@ class MySQLOperation<F extends DatabaseObject> extends MyOperation<F> {
     //数据库数据表列表
     private static List<String> sqlList = new ArrayList<String>();
 
-    MySQLOperation(MyConnection connect, F f, Class<?> objectClass) {
-        super(connect, f, objectClass);
+    private MyConnection<Connection> connect;
+
+    MySQLOperation(MyConnection<Connection> connect, F f, Class<?> objectClass) {
+        super(f, objectClass);
+        this.connect = connect;
     }
+
+    @Override
+    protected void SQLRequest(final Mode mode, final OnResponseListener listener) {
+        connect.connect(new MyConnection.OnConnectListener<Connection>() {
+            @Override
+            public void onError(String error) {
+                listener.onError(error);
+            }
+
+            @Override
+            public void done(Connection conn) {
+                try {
+                    String sql = listener.toSQLInstruct();
+                    QLog.i(this, QLOG_KEY, "即将执行的sql语句为: " + sql);
+                    PreparedStatement ps = conn.prepareStatement(sql);
+                    ResultSet resultSet = null;
+                    boolean b = false;
+                    int i = 0;
+                    switch (mode) {
+                        case COMMON:
+                            b = ps.execute();
+                            if (b) {
+                                QLog.i(this, QLOG_KEY + "_COMMON", "此次sql语句执行成功！并且有返回值！");
+                                resultSet = ps.getResultSet();
+                            } else {
+                                QLog.w(this, QLOG_KEY + "_COMMON", "此次sql语句执行成功！但没有任何返回值");
+                            }
+                            break;
+                        case UPDATE:
+                            QLog.i(this, QLOG_KEY + "_UPDATE", "此次执行的SQL语句成功执行 " + i + " 个");
+                            i = ps.executeUpdate();
+                            break;
+                        case SELECT:
+                            QLog.i(this, QLOG_KEY + "_SELECT", "此次SQL语句执行有返回的值，使用 resultSet 具体查看。");
+                            resultSet = ps.executeQuery();
+                            break;
+                        default:
+                            throw new Exception("非正常Mode！");
+                    }
+                    listener.responseResult(mode, resultSet, b, i);
+                } catch (SQLException e) {
+                    QLog.w(this, QLOG_KEY, "发生数据库访问错误！:" + e.getMessage());
+                    e.printStackTrace();
+                    listener.onError(e.getMessage());
+                } catch (Exception e) {
+                    QLog.w(this, QLOG_KEY, "此次sql语句执行失败！:" + e.getMessage());
+                    e.printStackTrace();
+                    listener.onError(e.getMessage());
+                }
+
+            }
+        });
+    }
+
 
     @Override
     public void createTable() {

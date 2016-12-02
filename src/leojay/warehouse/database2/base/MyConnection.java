@@ -1,7 +1,5 @@
 package leojay.warehouse.database2.base;
 
-import java.sql.Connection;
-
 /**
  * 获取数据库链接接口
  * <p>
@@ -11,14 +9,14 @@ import java.sql.Connection;
  * time:16/11/29__19:21<br/>
  * </p>
  */
-public interface MyConnection {
-    void connect(OnConnectListener listener);
+public interface MyConnection<F> {
+    void connect(OnConnectListener<F> listener);
 
-    interface OnConnectListener {
+    interface  OnConnectListener<F> {
 
         void onError(String error);
 
-        void done(Connection conn);
+        void done(F conn);
 
     }
 }
