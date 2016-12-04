@@ -14,8 +14,10 @@
  * 有一些数据库的操作方式，都是代理的类MyOperation，所有数据库操作都在MyOperation里完成
  * 其中，接口MyConfig根据实际使用可以删减，一般情况下MyConfig只配置数据库链接信息。
  * </p>
+ * <p>
  * time:16/12/3__17:46
  *
  * @author:leojay
+ * @see leojay.tools.database2
  */
 package leojay.tools.database2.base;

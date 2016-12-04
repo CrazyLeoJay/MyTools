@@ -17,12 +17,11 @@ import java.util.HashMap;
 import java.util.List;
 
 /**
+ * MySQL操作类
  * <p>
- * package:leojay.warehouse.database2<br>
- * project: MyTools<br>
- * author:leojay<br>
- * time:16/11/30__13:41<br>
- * </p>
+ * time:16/11/30__13:41
+ *
+ * @author:leojay
  */
 public class MySQLOperation<F extends DatabaseObject> extends MyOperation<F, OnResponseListener> {
     private static final String QLOG_KEY = "MySQLOperation.class";
@@ -38,11 +37,26 @@ public class MySQLOperation<F extends DatabaseObject> extends MyOperation<F, OnR
 
     private MyConnection<Connection> connect;
 
+    /**
+     * 构造函数
+     *
+     * @param connect     数据库链接
+     * @param f           数据类
+     * @param objectClass 基本类
+     */
     MySQLOperation(MyConnection<Connection> connect, F f, Class<?> objectClass) {
         super(f, objectClass);
         this.connect = connect;
     }
 
+    /**
+     * 产生一个数据库链接,将会根据设置的查询模式，
+     * 返回相应的结果，具体看接口OnResponseListener
+     *
+     * @param mode     数据返回结果模式
+     * @param listener 操作监听
+     * @see OnResponseListener
+     */
     @Override
     public void SQLRequest(final Mode mode, final OnResponseListener listener) {
         connect.connect(new MyConnection.OnConnectListener<Connection>() {
@@ -96,7 +110,9 @@ public class MySQLOperation<F extends DatabaseObject> extends MyOperation<F, OnR
         });
     }
 
-
+    /**
+     * 创建数据表，先会检查该表是否存在，若不存在就创建该表。
+     */
     @Override
     public void createTable() {
         isTab = isTab(f);
@@ -148,6 +164,11 @@ public class MySQLOperation<F extends DatabaseObject> extends MyOperation<F, OnR
         }
     }
 
+    /**
+     * 写入数据，先判断主键模式，若不是自动增长模式，且主键为空，就发生一个异常。
+     * <p>
+     * 写入的数据若附加更新时间和写入时间，将会直接写入当前时间
+     */
     @Override
     public void writeData() {
         switch (getIdMode()) {
@@ -181,7 +202,7 @@ public class MySQLOperation<F extends DatabaseObject> extends MyOperation<F, OnR
                 String sql_item = "";
                 String sql_value = "";
                 List<HashMap<String, String>> classArgs = getClassArgs();
-                int i = 0;
+                int i = 1;
                 int j = 0;
                 for (HashMap<String, String> map : classArgs) {
                     String name = map.get("name");
@@ -199,9 +220,18 @@ public class MySQLOperation<F extends DatabaseObject> extends MyOperation<F, OnR
                     j++;
                     i++;
                 }
-
-                String write_sql = "INSERT INTO `" + f.getTableName() + "` (`" + F.UNId_ARG + "`, " + sql_item +
-                        "`" + F.CREATE_TIME + "`, `" + F.UPDATE_TIME + "`) VALUES (" + f.getUniqueId() + "," + sql_value + "NOW(), NOW());";
+                if (isUpdateTimeField) {
+                    sql_item += ", `" + F.UPDATE_TIME + "`";
+                    sql_value += ", NOW()";
+                }
+                if (isCreateTimeField) {
+                    sql_item += ", `" + F.CREATE_TIME + "`";
+                    sql_value += ", NOW()";
+                }
+                String write_sql = "INSERT INTO `" + f.getTableName() + "` " +
+                        "(`" + F.UNId_ARG + "`, " + sql_item + "`) " +
+                        "VALUES " +
+                        "(" + f.getUniqueId() + "," + sql_value + " );";
                 QLog.i(this, QLOG_KEY, "测试输出语句：" + write_sql);
                 if (j == 0) throw new Exception("该对象没有设置参数！！！数据库会插入空值");
                 return write_sql;
@@ -209,11 +239,14 @@ public class MySQLOperation<F extends DatabaseObject> extends MyOperation<F, OnR
 
             @Override
             public void responseResult(Mode mode, ResultSet resultSet, boolean b, int i) throws SQLException {
-
+                QLog.i(this, QLOG_KEY, "执行成功！");
             }
         });
     }
 
+    /**
+     * 删除数据，根据主键删除数据，主键不能为空！但主键为空时也不会包异常，但是不会执行任何操作
+     */
     @Override
     public void deleteData() {
         if (!this.f.getUniqueId().isEmpty()) {
@@ -241,7 +274,11 @@ public class MySQLOperation<F extends DatabaseObject> extends MyOperation<F, OnR
     /**
      * 查询数据
      * 当未设置该对象的参数值，则查询该对象所对应数据表的所有数据
-     * 当设置参数后会精确查询所有符合的值
+     * 当设置参数后，
+     * 会根据设置的参数精确查询所有符合条件的值
+     *
+     * @param mode     查找模式，精确查找和模糊查找
+     * @param listener 查询结果监听
      */
     @Override
     public void selectData(final SelectMode mode, final OnResultListener<F> listener) {
@@ -314,10 +351,21 @@ public class MySQLOperation<F extends DatabaseObject> extends MyOperation<F, OnR
         });
     }
 
+    /**
+     * 查询数据，默认查找模式为精确查找
+     *
+     * @param listener
+     */
     public void selectData(final OnResultListener<F> listener) {
         selectData(SelectMode.ADD, listener);
     }
 
+    /**
+     * 更新数据
+     * <p>
+     * 以主键为主，根据主键查找数据并修改
+     * 但只修该对象里有值得参数所对应的数据表字段
+     */
     @Override
     public void updateData() {
 
@@ -413,6 +461,9 @@ public class MySQLOperation<F extends DatabaseObject> extends MyOperation<F, OnR
 
     /**
      * 获取 sql 中的 属性 字段部分
+     *
+     * @param type
+     * @return
      */
     private String typeFilter(String type) {
         if (type.equals("string") || type.equals("String")) {
@@ -425,6 +476,9 @@ public class MySQLOperation<F extends DatabaseObject> extends MyOperation<F, OnR
 
     /**
      * 获取 sql 中的 id 字段部分
+     *
+     * @param mode
+     * @return
      */
     @Override
     protected String getIdSql(IDMode mode) {

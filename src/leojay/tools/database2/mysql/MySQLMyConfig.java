@@ -6,10 +6,12 @@ import leojay.tools.ReadProperties;
 import java.util.Properties;
 
 /**
- * package:leojay.warehouse.database2
- * project: MyTools
- * author:leojay
+ * 配置类，用于数据库链接的基本配置
+ * <p>
  * time:16/11/30__13:05
+ *
+ * @author:leojay
+ * @see leojay.tools.database2.base.MyConfig
  */
 class MySQLMyConfig implements MyConfig {
     private String DB_Driver;
@@ -19,6 +21,13 @@ class MySQLMyConfig implements MyConfig {
     private String USER_NAME;
     private String PASSWORD;
     private static boolean isHaveConfig = false;
+
+    /**
+     * 构造函数
+     *
+     * @param url  配置文件地址，绝对地址
+     * @param name 配置文件名称，若为空，则使用默认：dbconfig
+     */
     MySQLMyConfig(final String url, final String name) {
         ReadProperties dbconfig = new ReadProperties(new ReadProperties.InitConfig() {
             @Override

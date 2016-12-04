@@ -9,20 +9,31 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 /**
- * package:leojay.warehouse.database2
- * project: MyTools
- * author:leojay
+ * MySQL的链接类
+ * <p>
  * time:16/11/30__13:18
+ *
+ * @author:leojay
+ * @see leojay.tools.database2.base.MyConnection
  */
 class MySQLConnect implements MyConnection<Connection> {
 
     private MyConfig config;
     private static final String QLOG_KEY = "MySQLConnect.class";
 
+    /**
+     * 构造函数
+     * @param config 配置文件
+     */
     MySQLConnect(MyConfig config) {
         this.config = config;
     }
 
+    /**
+     * 产生一个 Connection 链接
+     *
+     * @param listener 产生一个数据库链接
+     */
     @Override
     public void connect(OnConnectListener<Connection> listener) {
         if (config.isHaveConfig()) {
@@ -62,6 +73,11 @@ class MySQLConnect implements MyConnection<Connection> {
         }
     }
 
+    /**
+     * 关闭数据库链接
+     *
+     * @param conn 要关闭的链接
+     */
     private void close(Connection conn) {
         if (conn != null) {
             try {
@@ -82,6 +98,5 @@ class MySQLConnect implements MyConnection<Connection> {
             }
         }
     }
-
 
 }

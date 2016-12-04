@@ -3,26 +3,47 @@ package leojay.tools.database2.mysql;
 import leojay.tools.database2.base.*;
 
 /**
- * package:leojay.warehouse.database2
- * project: MyTools
- * author:leojay
+ * MySQL工厂
+ * <p>
  * time:16/11/25__16:33
+ *
+ * @param <F> 数据表基础类
+ * @author:leojay
+ * @see DatabaseFactory
  */
-class MySQLFactory<F extends DatabaseObject> extends DatabaseFactory<F> {
+class MySQLFactory<F extends DatabaseObject> extends DatabaseFactory<MySQLObject,
+        MySQLMyConfig, MySQLConnect, MySQLOperation<MySQLObject>> {
 
+    /**
+     * 创建一个配置
+     *
+     * @return 配置类
+     */
     @Override
-    public MyConfig createConfig() {
+    public MySQLMyConfig createConfig() {
         return new MySQLMyConfig("./src/config", "dbconfig");
     }
 
+    /**
+     * 创建一个数据库链接
+     *
+     * @return
+     */
     @Override
-    public MyConnection createConnect() {
+    public MySQLConnect createConnect() {
         return new MySQLConnect(createConfig());
     }
 
+    /**
+     * 创建一个数据库操作类
+     *
+     * @param DObjectClass     操作类
+     * @param mySQLObjectClass 基础类
+     * @return 操作类
+     */
     @Override
-    public MyOperation createOperation(F fClass, Class<F> objectClass) {
-        return new MySQLOperation<>(createConnect(), fClass, objectClass);
+    public MySQLOperation<MySQLObject> createOperation(MySQLObject DObjectClass, Class<MySQLObject> mySQLObjectClass) {
+        return new MySQLOperation<>(createConnect(), DObjectClass, mySQLObjectClass);
     }
 
 }

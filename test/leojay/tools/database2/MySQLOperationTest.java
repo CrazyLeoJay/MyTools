@@ -14,7 +14,6 @@ import java.util.List;
  * author:leojay<br>
  * time:16/11/30__16:18<br>
  *     @author leojay
- *     @deprecated
  * </p>
  */
 public class MySQLOperationTest {
@@ -54,7 +53,6 @@ public class MySQLOperationTest {
 
     @Test
     public void updateData() throws Exception {
-
     }
 
     @Test
