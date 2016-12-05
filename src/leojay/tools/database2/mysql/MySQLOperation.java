@@ -44,7 +44,7 @@ public class MySQLOperation<F extends DatabaseObject> extends MyOperation<F, OnR
      * @param f           数据类
      * @param objectClass 基本类
      */
-    MySQLOperation(MyConnection<Connection> connect, F f, Class<?> objectClass) {
+    MySQLOperation(MyConnection<Connection> connect, F f, Class<? extends DatabaseObject> objectClass) {
         super(f, objectClass);
         this.connect = connect;
     }

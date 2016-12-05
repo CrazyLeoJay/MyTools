@@ -34,16 +34,18 @@ class MySQLFactory<F extends DatabaseObject> extends DatabaseFactory<MySQLObject
         return new MySQLConnect(createConfig());
     }
 
+
     /**
      * 创建一个数据库操作类
      *
      * @param DObjectClass     操作类
-     * @param mySQLObjectClass 基础类
+     * @param objectClass 基础类
      * @return 操作类
      */
     @Override
-    public MySQLOperation<MySQLObject> createOperation(MySQLObject DObjectClass, Class<MySQLObject> mySQLObjectClass) {
-        return new MySQLOperation<>(createConnect(), DObjectClass, mySQLObjectClass);
+    public MySQLOperation<MySQLObject> createOperation(MySQLObject DObjectClass,
+                                                       Class<? extends MySQLObject> objectClass) {
+        return new MySQLOperation<>(createConnect(), DObjectClass, objectClass);
     }
 
 }
