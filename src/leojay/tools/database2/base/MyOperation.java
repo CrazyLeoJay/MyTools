@@ -111,14 +111,17 @@ public abstract class MyOperation<F extends DatabaseObject, L extends OnResponse
         while (!names.equals(objectClass.getName())) {
             Field[] declaredFields = aClass.getDeclaredFields();
             if (declaredFields.length > 0) {
+                List<String> ns = new ArrayList<>();
                 for (Field f_item : declaredFields) {
                     f_item.setAccessible(true);
-                    if (f_item.getName().contains("$")) continue;
+                    String name = f_item.getName();
+                    if (name.contains("$")) continue;
+                    if (ns.contains(name)) continue;
+                    ns.add(name);
                     Object o = f_item.get(obClass);
                     String value = (o == null ? null : o.toString());
-
                     HashMap<String, String> map = new HashMap<>();
-                    map.put("name", f_item.getName());
+                    map.put("name", name);
                     map.put("type", f_item.getType().getSimpleName());
                     map.put("value", value);
                     results.add(map);
