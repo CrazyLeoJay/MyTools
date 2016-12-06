@@ -1,5 +1,6 @@
 package leojay.tools.database2.base;
 
+import leojay.tools.QLog;
 import leojay.tools.database2.mysql.OnResponseListener;
 
 import java.lang.reflect.Field;
@@ -210,6 +211,23 @@ public abstract class MyOperation<F extends DatabaseObject, L extends OnResponse
         //转换36进制数并输出
         Long l = Long.parseLong(sss + time + thisData);
         return "'" + Long.toString(l, 36) + "'";
+    }
+
+    public static <OB extends DatabaseObject> void setValueToClassField(OB aClass, String fieldName, Object value) {
+        try {
+            Field df = aClass.getClass().getDeclaredField(fieldName);
+            df.setAccessible(true);
+            df.set(aClass, value);
+        } catch (NoSuchFieldException e) {
+            e.printStackTrace();
+            QLog.e(MyOperation.class, "没有该字段名称：" + e.getMessage());
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+            QLog.e(MyOperation.class, "有该字段,但赋值失败！：" + e.getMessage());
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+            QLog.e(MyOperation.class, "有该字段,但赋值失败！" + fieldName + " 值的数据类型不对：" + e.getMessage());
+        }
     }
 
 }
