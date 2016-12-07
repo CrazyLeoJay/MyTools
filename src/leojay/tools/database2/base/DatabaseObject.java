@@ -40,6 +40,8 @@ public abstract class DatabaseObject<Operation extends MyOperation> {
     //数据表可选字段变量
     private String createTime = null;//创建时间
     private String updateTime = null;//更新时间
+    private boolean isHaveCreateTime = false;
+    private boolean isHaveUpdateTime = false;
     //数据字段
     public static final String UNId_ARG = "uniqueId";
     public static final String CREATE_TIME = "createTime";//创建时间
@@ -221,5 +223,21 @@ public abstract class DatabaseObject<Operation extends MyOperation> {
      */
     public void setUpdateTime(String updateTime) {
         this.updateTime = updateTime;
+    }
+
+    public boolean isHaveCreateTime() {
+        return isHaveCreateTime;
+    }
+
+    public void setHaveCreateTime(boolean haveCreateTime) {
+        isHaveCreateTime = haveCreateTime;
+    }
+
+    public boolean isHaveUpdateTime() {
+        return isHaveUpdateTime;
+    }
+
+    public void setHaveUpdateTime(boolean haveUpdateTime) {
+        isHaveUpdateTime = haveUpdateTime;
     }
 }

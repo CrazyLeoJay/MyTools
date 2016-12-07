@@ -87,54 +87,6 @@ public abstract class MyOperation<F extends DatabaseObject, L extends OnResponse
     }
 
     /**
-     * 获得类的参数，包括继承类
-     * <p>
-     * 这其中有两个决定性参数，在构造函数中的数据表类和基础类，
-     * 本方法会从数据类开始提取其内部参数，并得其父类，除非她的父类为基础类
-     * <p>
-     * 返回值为一个HashMap的List，每个HashMap有三个值，分别代表：
-     * <OL>
-     * <LI>"name": 参数名称</LI>
-     * <LI>"type": 参数数据类型</LI>
-     * <LI>"value":参数的值</LI>
-     * </OL>
-     *
-     * @return 参数列表
-     * @throws Exception 当没有设置数据表类和基础类时抛出异常！
-     */
-    public List<HashMap<String, String>> getClassArgs() throws Exception {
-        F obClass = f;
-        if (obClass == null) throw new Exception("没有设置正确的数据类！！");
-        if (objectClass == null) throw new Exception("没有设置基础类！！");
-        List<HashMap<String, String>> results = new ArrayList<>();
-        Class<?> aClass = obClass.getClass();
-        String names = aClass.getName();
-        while (!names.equals(objectClass.getName())) {
-            Field[] declaredFields = aClass.getDeclaredFields();
-            if (declaredFields.length > 0) {
-                List<String> ns = new ArrayList<>();
-                for (Field f_item : declaredFields) {
-                    f_item.setAccessible(true);
-                    String name = f_item.getName();
-                    if (name.contains("$")) continue;
-                    if (ns.contains(name)) continue;
-                    ns.add(name);
-                    Object o = f_item.get(obClass);
-                    String value = (o == null ? null : o.toString());
-                    HashMap<String, String> map = new HashMap<>();
-                    map.put("name", name);
-                    map.put("type", f_item.getType().getSimpleName());
-                    map.put("value", value);
-                    results.add(map);
-                }
-            }
-            aClass = aClass.getSuperclass();
-            names = aClass.getName();
-        }
-        return results;
-    }
-
-    /**
      * 这个方法将建立一个数据库的链接并发生响应
      *
      * @param mode     数据返回结果模式
@@ -187,6 +139,53 @@ public abstract class MyOperation<F extends DatabaseObject, L extends OnResponse
     }
 
     /**
+     * 获得类的参数，包括继承类
+     * <p>
+     * 这其中有两个决定性参数，在构造函数中的数据表类和基础类，
+     * 本方法会从数据类开始提取其内部参数，并得其父类，除非她的父类为基础类
+     * <p>
+     * 返回值为一个HashMap的List，每个HashMap有三个值，分别代表：
+     * <OL>
+     * <LI>"name": 参数名称</LI>
+     * <LI>"type": 参数数据类型</LI>
+     * <LI>"value":参数的值</LI>
+     * </OL>
+     *
+     * @return 参数列表
+     * @throws Exception 当没有设置数据表类和基础类时抛出异常！
+     */
+    public List<HashMap<String, String>> getClassArgs() throws Exception {
+        if (f == null) throw new Exception("没有设置正确的数据类！！");
+        if (objectClass == null) throw new Exception("没有设置基础类！！");
+        List<HashMap<String, String>> results = new ArrayList<>();
+        Class<?> aClass = f.getClass();
+        String names = aClass.getName();
+        List<String> ns = new ArrayList<>();
+        while (!names.equals(objectClass.getName())) {
+            Field[] declaredFields = aClass.getDeclaredFields();
+            if (declaredFields.length > 0) {
+                for (Field f_item : declaredFields) {
+                    f_item.setAccessible(true);
+                    String name = f_item.getName();
+                    if (name.contains("$")) continue;
+                    if (ns.contains(name)) continue;
+                    ns.add(name);
+                    Object o = f_item.get(f);
+                    String value = (o == null ? null : o.toString());
+                    HashMap<String, String> map = new HashMap<>();
+                    map.put("name", name);
+                    map.put("type", f_item.getType().getSimpleName());
+                    map.put("value", value);
+                    results.add(map);
+                }
+            }
+            aClass = aClass.getSuperclass();
+            names = aClass.getName();
+        }
+        return results;
+    }
+
+    /**
      * 获取唯一id, 根据时间计算唯一id 方便移植
      * 唯一id组成: 秒数() +日期(6)+随机数()
      *
@@ -213,7 +212,7 @@ public abstract class MyOperation<F extends DatabaseObject, L extends OnResponse
         return "'" + Long.toString(l, 36) + "'";
     }
 
-    public static <OB extends DatabaseObject> void setValueToClassField(OB aClass, String fieldName, Object value) {
+    public static <OB> void setValueToClassField(OB aClass, String fieldName, Object value) {
         try {
             Field df = aClass.getClass().getDeclaredField(fieldName);
             df.setAccessible(true);

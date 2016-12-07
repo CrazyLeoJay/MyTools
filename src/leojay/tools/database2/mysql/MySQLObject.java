@@ -12,7 +12,8 @@ import leojay.tools.database2.base.DatabaseObject;
  */
 public class MySQLObject extends DatabaseObject<MySQLOperation<MySQLObject>> {
 
-    MySQLFactory<MySQLObject> factory;
+    private MySQLFactory<MySQLObject> factory;
+    private MySQLOperation<MySQLObject> operation;
 
     /**
      * 构造函数
@@ -27,7 +28,10 @@ public class MySQLObject extends DatabaseObject<MySQLOperation<MySQLObject>> {
      */
     @Override
     public MySQLOperation<MySQLObject> getOperation() {
-        return factory.createOperation(this, MySQLObject.class);
+        if (operation == null) {
+            operation = factory.createOperation(this, MySQLObject.class);
+        }
+        return operation;
     }
 
 }

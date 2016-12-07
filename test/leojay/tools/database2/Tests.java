@@ -7,6 +7,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * <p>
@@ -50,6 +52,18 @@ public class Tests extends Assert {
             e.printStackTrace();
             QLog.e(MyOperation.class, "有该字段,但赋值失败！" + name + " 值的数据类型不对：" + e.getMessage());
         }
+
+    }
+
+    @Test
+    public void listTest(){
+        List<String> list = new ArrayList<>();
+//        list.add("h");
+//        list.add("he");
+//        list.add("hel");
+//        list.add("hell");
+//        list.add("hello");
+        assertEquals(true, list.contains("hells"));
 
     }
 }
