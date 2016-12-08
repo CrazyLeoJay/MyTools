@@ -101,6 +101,8 @@ public abstract class MyOperation<F extends DatabaseObject, L extends OnResponse
 
     public abstract void createTable();
 
+    public abstract void deleteTable();
+
     public abstract void writeData();
 
     public abstract void deleteData();

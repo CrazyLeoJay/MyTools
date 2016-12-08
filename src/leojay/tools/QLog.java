@@ -78,10 +78,13 @@ public final class QLog {
         if (key != null) {
             arg = "(" + key + ")";
         }
-        String result = "[" + data + "]" +
+        String result =
+                "[" + data + "]" +
 //                " package: " + page +
-                " \\|/ type:" + type +
-                "_ " + arg + "(" + ste.getFileName() + " :" + ste.getLineNumber() + "): " + message;
+//                " \\|/ type:" +
+                        type +
+                "_ " + arg +
+                "(" + ste.getFileName() + " :" + ste.getLineNumber() + "): " + message;
         System.out.println(result);
         return result;
     }

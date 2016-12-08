@@ -13,7 +13,7 @@ import java.sql.SQLException;
  * <p>
  * time:16/11/30__13:18
  *
- * @author:leojay
+ * @author leojay
  * @see leojay.tools.database2.base.MyConnection
  */
 class MySQLConnect implements MyConnection<Connection> {
@@ -23,6 +23,7 @@ class MySQLConnect implements MyConnection<Connection> {
 
     /**
      * 构造函数
+     *
      * @param config 配置文件
      */
     MySQLConnect(MyConfig config) {
@@ -66,6 +67,9 @@ class MySQLConnect implements MyConnection<Connection> {
                 }
             } catch (SQLException e) {
                 QLog.e(this, QLOG_KEY, "读取数据库发生错误!" + e.getMessage());
+                e.printStackTrace();
+            } catch (Exception e) {
+                QLog.e(this, QLOG_KEY, "数据库执行发生错误： " + e.getMessage());
                 e.printStackTrace();
             }
         } else {

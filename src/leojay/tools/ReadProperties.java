@@ -73,6 +73,7 @@ public final class ReadProperties {
             }
         }
         thisProperties = properties;
+        System.out.println("得到的配置为：" + thisProperties);
         return properties;
     }
 
@@ -214,7 +215,6 @@ public final class ReadProperties {
             properties.store(out, "This is a default file");
             out.close();
             QLog.i(this, "写入配置文件成功！并关闭输出流！");
-            System.out.println(properties);
         } catch (FileNotFoundException e) {
             QLog.e(this, "打开文件 output 流失败。错误信息： " + e);
             e.printStackTrace();

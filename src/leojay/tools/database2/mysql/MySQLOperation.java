@@ -1,11 +1,11 @@
 package leojay.tools.database2.mysql;
 
+import leojay.tools.MyToolsException;
+import leojay.tools.QLog;
 import leojay.tools.database2.base.DatabaseObject;
 import leojay.tools.database2.base.MyConnection;
 import leojay.tools.database2.base.MyOperation;
 import leojay.tools.database2.base.SelectMode;
-import leojay.tools.MyToolsException;
-import leojay.tools.QLog;
 
 import java.lang.reflect.Field;
 import java.sql.Connection;
@@ -66,45 +66,45 @@ public class MySQLOperation<F extends DatabaseObject> extends MyOperation<F, OnR
             }
 
             @Override
-            public void done(Connection conn) {
-                try {
-                    String sql = listener.toSQLInstruct();
-                    QLog.i(this, QLOG_KEY, "即将执行的sql语句为: " + sql);
-                    PreparedStatement ps = conn.prepareStatement(sql);
-                    ResultSet resultSet = null;
-                    boolean b = false;
-                    int i = 0;
-                    switch (mode) {
-                        case COMMON:
-                            b = ps.execute();
-                            if (b) {
-                                QLog.i(this, QLOG_KEY + "_COMMON", "此次sql语句执行成功！并且有返回值！");
-                                resultSet = ps.getResultSet();
-                            } else {
-                                QLog.w(this, QLOG_KEY + "_COMMON", "此次sql语句执行成功！但没有任何返回值");
-                            }
-                            break;
-                        case UPDATE:
-                            QLog.i(this, QLOG_KEY + "_UPDATE", "此次执行的SQL语句成功执行 " + i + " 个");
-                            i = ps.executeUpdate();
-                            break;
-                        case SELECT:
-                            QLog.i(this, QLOG_KEY + "_SELECT", "此次SQL语句执行有返回的值，使用 resultSet 具体查看。");
-                            resultSet = ps.executeQuery();
-                            break;
-                        default:
-                            throw new Exception("非正常Mode！");
-                    }
-                    listener.responseResult(mode, resultSet, b, i);
-                } catch (SQLException e) {
-                    QLog.w(this, QLOG_KEY, "发生数据库访问错误！:" + e.getMessage());
-                    e.printStackTrace();
-                    listener.onError(e.getMessage());
-                } catch (Exception e) {
-                    QLog.w(this, QLOG_KEY, "此次sql语句执行失败！:" + e.getMessage());
-                    e.printStackTrace();
-                    listener.onError(e.getMessage());
+            public void done(Connection conn) throws Exception {
+//                try {
+                String sql = listener.toSQLInstruct();
+                QLog.i(this, QLOG_KEY, "即将执行的sql语句为: " + sql);
+                PreparedStatement ps = conn.prepareStatement(sql);
+                ResultSet resultSet = null;
+                boolean b = false;
+                int i = 0;
+                switch (mode) {
+                    case COMMON:
+                        b = ps.execute();
+                        if (b) {
+                            QLog.i(this, QLOG_KEY + "_COMMON", "此次sql语句执行成功！并且有返回值！");
+                            resultSet = ps.getResultSet();
+                        } else {
+                            QLog.w(this, QLOG_KEY + "_COMMON", "此次sql语句执行成功！但没有任何返回值");
+                        }
+                        break;
+                    case UPDATE:
+                        QLog.i(this, QLOG_KEY + "_UPDATE", "此次执行的SQL语句成功执行 " + i + " 个");
+                        i = ps.executeUpdate();
+                        break;
+                    case SELECT:
+                        QLog.i(this, QLOG_KEY + "_SELECT", "此次SQL语句执行有返回的值，使用 resultSet 具体查看。");
+                        resultSet = ps.executeQuery();
+                        break;
+                    default:
+                        throw new Exception("非正常Mode！");
                 }
+                listener.responseResult(mode, resultSet, b, i);
+//                } catch (SQLException e) {
+//                    QLog.w(this, QLOG_KEY, "发生数据库访问错误！:" + e.getMessage());
+//                    e.printStackTrace();
+//                    listener.onError(e.getMessage());
+//                } catch (Exception e) {
+//                    QLog.w(this, QLOG_KEY, "此次sql语句执行失败！:" + e.getMessage());
+//                    e.printStackTrace();
+//                    listener.onError(e.getMessage());
+//                }
 
             }
         });
@@ -164,6 +164,35 @@ public class MySQLOperation<F extends DatabaseObject> extends MyOperation<F, OnR
         }
     }
 
+    @Override
+    public void deleteTable() {
+        if (isTab(f)) {
+            QLog.i(this, QLOG_KEY, "数据表" + f.getTableName() + "存在, 可以删除……");
+            SQLRequest(Mode.UPDATE, new OnResponseListener() {
+                @Override
+                public void responseResult(Mode mode, ResultSet resultSet, boolean b, int i) throws Exception {
+                    if (i > 0) {
+                        QLog.i(this, QLOG_KEY, "删除数据表成功， 参数" + i);
+                    } else {
+                        QLog.i(this, QLOG_KEY, "删除数据表失败， 参数" + i);
+                    }
+                }
+
+                @Override
+                public String onError(String error) {
+                    return null;
+                }
+
+                @Override
+                public String toSQLInstruct() throws Exception {
+                    return "DROP TABLE " + f.getTableName() + " ;";
+                }
+            });
+        } else {
+            QLog.w(this, QLOG_KEY, "数据表" + f.getTableName() + "不存在……");
+        }
+    }
+
     /**
      * 写入数据，先判断主键模式，若不是自动增长模式，且主键为空，就发生一个异常。
      * <p>
@@ -202,7 +231,7 @@ public class MySQLOperation<F extends DatabaseObject> extends MyOperation<F, OnR
                 String sql_item = "";
                 String sql_value = "";
                 List<HashMap<String, String>> classArgs = getClassArgs();
-                int i = 1;
+                int i = 2;
                 int j = 0;
                 for (HashMap<String, String> map : classArgs) {
                     String name = map.get("name");
@@ -229,7 +258,7 @@ public class MySQLOperation<F extends DatabaseObject> extends MyOperation<F, OnR
                     sql_value += ", NOW()";
                 }
                 String write_sql = "INSERT INTO `" + f.getTableName() + "` " +
-                        "(`" + F.UNId_ARG + "`, " + sql_item + "`) " +
+                        "(`" + F.UNId_ARG + "`, " + sql_item + ") " +
                         "VALUES " +
                         "(" + f.getUniqueId() + "," + sql_value + " );";
                 QLog.i(this, QLOG_KEY, "测试输出语句：" + write_sql);
@@ -249,7 +278,7 @@ public class MySQLOperation<F extends DatabaseObject> extends MyOperation<F, OnR
      */
     @Override
     public void deleteData() {
-        if (!this.f.getUniqueId().isEmpty()) {
+        if (this.f.getUniqueId() != null) {
             SQLRequest(Mode.UPDATE, new OnResponseListener() {
                 @Override
                 public String onError(String error) {
@@ -339,11 +368,14 @@ public class MySQLOperation<F extends DatabaseObject> extends MyOperation<F, OnR
                     F fs;
                     fs = (F) Class.forName(f.getClass().getName()).newInstance();
                     for (HashMap<String, String> item : classArgs) {
-                        String name = resultSet.getString(resultSet.findColumn(item.get("name")));
+                        Object name = resultSet.getObject(resultSet.findColumn(item.get("name")));
                         Field fie = fs.getClass().getDeclaredField(item.get("name"));
                         fie.setAccessible(true);
                         fie.set(fs, name);
                     }
+                    fs.setUniqueId(resultSet.getString(resultSet.findColumn(F.UNId_ARG)));
+                    if (isCreateTimeField) fs.setCreateTime(resultSet.getString(resultSet.findColumn(F.CREATE_TIME)));
+                    if (isUpdateTimeField) fs.setUpdateTime(resultSet.getString(resultSet.findColumn(F.UPDATE_TIME)));
                     result.add(fs);
                 }
                 listener.result(result);
@@ -387,9 +419,10 @@ public class MySQLOperation<F extends DatabaseObject> extends MyOperation<F, OnR
                         i++;
                     }
                 }
-                String sql = "UPDATE `" + f.getTableName() + "` SET " + sql_last + "`" + F.UPDATE_TIME + "`= NOW() ;";
+                String sql = "UPDATE `" + f.getTableName() + "` SET " + sql_last + "`" + F.UPDATE_TIME + "`= NOW() " +
+                        "Where `" + F.UNId_ARG + "`='" + f.getUniqueId() + "';";
                 QLog.i(this, QLOG_KEY, "即将执行的sql语句为: " + sql);
-                return null;
+                return sql;
             }
 
             @Override

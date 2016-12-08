@@ -82,6 +82,15 @@ public abstract class DatabaseObject<Operation extends MyOperation> {
     }
 
     /**
+     * 删除数据表
+     *
+     * @see MyOperation#deleteData()
+     */
+    public void deleteTable() {
+        getOperation().deleteTable();
+    }
+
+    /**
      * 写入数据
      *
      * @see MyOperation#writeData()

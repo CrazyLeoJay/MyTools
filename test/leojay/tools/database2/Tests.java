@@ -1,12 +1,10 @@
 package leojay.tools.database2;
 
-import leojay.tools.QLog;
 import leojay.tools.database2.base.MyOperation;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,46 +15,53 @@ import java.util.List;
  * @author:leojay
  */
 public class Tests extends Assert {
+    Apple apple;
+    List<Apple> list;
+
     @Before
     public void setUp() throws Exception {
-
-
-    }
-
-    class Values {
-        String name;
-        int age;
+        apple = new Apple();
     }
 
     @Test
-    public void setValueToClass() {
-        Values values = new Values();
-        setValueToClass(values, "name", "he");
-        setValueToClass(values, "age", "2");
-        assertEquals("he", values.name);
-        assertEquals(12, values.age);
-    }
-
-    public static <OB> void setValueToClass(OB aClass, String name, Object value) {
-        try {
-            Field df = aClass.getClass().getDeclaredField(name);
-            df.setAccessible(true);
-            df.set(aClass, value);
-        } catch (NoSuchFieldException e) {
-            e.printStackTrace();
-            QLog.e(MyOperation.class, "没有该字段名称：" + e.getMessage());
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-            QLog.e(MyOperation.class, "有该字段,但赋值失败！：" + e.getMessage());
-        } catch (IllegalArgumentException e) {
-            e.printStackTrace();
-            QLog.e(MyOperation.class, "有该字段,但赋值失败！" + name + " 值的数据类型不对：" + e.getMessage());
+    public void test() throws Exception {
+//        apple.deleteTable();
+        apple.createTable();
+        apple.setName("apple_good");
+        apple.setAge(23);
+        for (int k = 0; k < 20; k++) {
+            apple.writeData();
         }
+        apple = new Apple();
+        apple.selectData(Apple.class, new MyOperation.OnResultListener<Apple>() {
+            @Override
+            public void result(List<Apple> result) {
+                list = result;
+            }
+        });
+        for (Apple apple : list) {
+            System.out.println(apple.getName() + " -- >" + apple.getAge());
+        }
+        int i = list.size() - 1;
+        for (int j = 1; j < i; j++) {
+            apple = new Apple();
+            apple.setUniqueId(list.get(j).getUniqueId());
+            apple.setAge(500);
+            if (j % 2 == 0) {
+                apple.setName("apple_bad");
+            }
+            apple.updateData();
+        }
+//
+        apple = new Apple();
+        String uniqueId = list.get(i - 1).getUniqueId();
+        apple.setUniqueId(uniqueId);
+        apple.deleteData();
 
     }
 
     @Test
-    public void listTest(){
+    public void listTest() {
         List<String> list = new ArrayList<>();
 //        list.add("h");
 //        list.add("he");

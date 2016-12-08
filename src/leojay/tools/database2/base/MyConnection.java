@@ -42,7 +42,7 @@ public interface MyConnection<F> {
          *
          * @param conn 链接类
          */
-        void done(F conn);
+        void done(F conn) throws Exception;
 
     }
 }
