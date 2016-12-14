@@ -159,10 +159,10 @@ public abstract class MyOperation<F extends DatabaseObject, L extends OnResponse
     public List<HashMap<String, String>> getClassArgs() throws Exception {
         if (f == null) throw new Exception("没有设置正确的数据类！！");
         if (objectClass == null) throw new Exception("没有设置基础类！！");
-        List<HashMap<String, String>> results = new ArrayList<>();
+        List<HashMap<String, String>> results = new ArrayList<HashMap<String, String>>();
         Class<?> aClass = f.getClass();
         String names = aClass.getName();
-        List<String> ns = new ArrayList<>();
+        List<String> ns = new ArrayList<String>();
         while (!names.equals(objectClass.getName())) {
             Field[] declaredFields = aClass.getDeclaredFields();
             if (declaredFields.length > 0) {
@@ -170,11 +170,11 @@ public abstract class MyOperation<F extends DatabaseObject, L extends OnResponse
                     f_item.setAccessible(true);
                     String name = f_item.getName();
                     if (name.contains("$")) continue;
-                    if (ns.contains(name)) continue;
+//                    if (ns.contains(name)) continue;
                     ns.add(name);
                     Object o = f_item.get(f);
                     String value = (o == null ? null : o.toString());
-                    HashMap<String, String> map = new HashMap<>();
+                    HashMap<String, String> map = new HashMap<String, String>();
                     map.put("name", name);
                     map.put("type", f_item.getType().getSimpleName());
                     map.put("value", value);

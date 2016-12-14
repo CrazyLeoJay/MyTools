@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/ClearDoc/ClearDoc.iml" filepath="$PROJECT_DIR$/ClearDoc/ClearDoc.iml" />
       <module fileurl="file://$PROJECT_DIR$/MyTools.iml" filepath="$PROJECT_DIR$/MyTools.iml" />
     </modules>
   </component>

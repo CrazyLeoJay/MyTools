@@ -3,9 +3,10 @@
     <output-path>$PROJECT_DIR$/out/artifacts/MyTools_jar</output-path>
     <root id="archive" name="MyTools.jar">
       <element id="module-output" name="MyTools" />
-      <element id="directory" name="META-INF">
-        <element id="file-copy" path="$PROJECT_DIR$/META-INF/MANIFEST.MF" />
-      </element>
+      <element id="artifact" artifact-name="zxing-javase:jar" />
+      <element id="artifact" artifact-name="zxing-core:jar" />
+      <element id="file-copy" path="$PROJECT_DIR$/lib/mysql-connector-java-5.1.39-bin.jar" />
+      <element id="file-copy" path="$PROJECT_DIR$/../WebTools/out/artifacts/zxing_javase_jar/zxing-javase.jar" />
     </root>
   </artifact>
 </component>

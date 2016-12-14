@@ -45,7 +45,7 @@ class MySQLFactory<F extends DatabaseObject> extends DatabaseFactory<MySQLObject
     @Override
     public MySQLOperation<MySQLObject> createOperation(MySQLObject DObjectClass,
                                                        Class<? extends MySQLObject> objectClass) {
-        return new MySQLOperation<>(createConnect(), DObjectClass, objectClass);
+        return new MySQLOperation<MySQLObject>(createConnect(), DObjectClass, objectClass);
     }
 
 }

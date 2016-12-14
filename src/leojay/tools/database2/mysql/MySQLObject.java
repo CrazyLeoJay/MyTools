@@ -19,7 +19,7 @@ public class MySQLObject extends DatabaseObject<MySQLOperation<MySQLObject>> {
      * 构造函数
      */
     protected MySQLObject() {
-        factory = new MySQLFactory<>();
+        factory = new MySQLFactory<MySQLObject>();
         createTable();
     }
 
