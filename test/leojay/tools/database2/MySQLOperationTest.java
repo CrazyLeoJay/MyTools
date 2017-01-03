@@ -1,7 +1,7 @@
 package leojay.tools.database2;
 
-import leojay.tools.database2.base.MyOperation;
-import leojay.tools.database2.base.SelectMode;
+import leojay.tools.java.database2.base.MyOperation;
+import leojay.tools.java.database2.base.SelectMode;
 import org.junit.Before;
 import org.junit.Test;
 

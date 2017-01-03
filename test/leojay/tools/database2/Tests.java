@@ -1,6 +1,6 @@
 package leojay.tools.database2;
 
-import leojay.tools.database2.base.MyOperation;
+import leojay.tools.java.database2.base.MyOperation;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -62,7 +62,7 @@ public class Tests extends Assert {
 
     @Test
     public void listTest() {
-        List<String> list = new ArrayList<>();
+        List<String> list = new ArrayList<String>();
 //        list.add("h");
 //        list.add("he");
 //        list.add("hel");

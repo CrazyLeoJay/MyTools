@@ -4,9 +4,12 @@ import net.sf.json.JSONObject;
 import org.codehaus.jackson.JsonEncoding;
 import org.codehaus.jackson.JsonGenerator;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.junit.Before;
 import org.junit.Test;
 
-import java.io.*;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,6 +20,18 @@ import java.util.List;
  * @author leojay
  */
 public class JSONTest {
+    User user;
+
+
+    @Before
+    public void setUp() throws Exception {
+        user = new User();
+        user.setName("fujiayu");
+        user.setAge(20);
+        user.setGroup("keji");
+
+    }
+
     @Test
     public void name() throws Exception {
         User user = new User();
@@ -85,24 +100,35 @@ public class JSONTest {
             jg = obj.getJsonFactory().createJsonGenerator(System.out,
                     JsonEncoding.UTF8);
 
-            String s = new String();
-            Reader reader = new Reader() {
-                @Override
-                public int read(char[] cbuf, int off, int len) throws IOException {
-                    return 0;
-                }
-
-                @Override
-                public void close() throws IOException {
-
-                }
-            };
-            BufferedOutputStream outputStream = new BufferedOutputStream(System.out);
-            BufferedInputStream inputStream = new BufferedInputStream(System.in);
-            PrintStream printStream = new PrintStream(System.out);
         } catch (Exception e) {
             e.printStackTrace();
         }
 
+    }
+
+    @Test
+    public void classToJsonTest() throws Exception {
+        StringWriter writer = new StringWriter();
+        JsonGenerator jg;
+        try {
+            jg = (new ObjectMapper()).getJsonFactory().createJsonGenerator(writer);
+            jg.writeObject(user);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        String s = writer.toString();
+        System.out.println(s);
+
+    }
+
+    @Test
+    public void jsonToClassTest() throws Exception {
+        String jsonString = "{\"name\":\"fujiayu\",\"age\":20,\"group\":\"keji\"}";
+        JSONObject obje = JSONObject.fromObject(jsonString);
+        Object name = obje.get("name");
+        Object age = obje.get("age");
+        Object group = obje.get("group");
+        System.out.println(name + " >>> " + age + ">>>" + group);
     }
 }

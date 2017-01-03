@@ -1,7 +1,7 @@
 package leojay.tools.database2;
 
-import leojay.tools.database2.mysql.MySQLObject;
-import leojay.tools.database2.base.MyOperation;
+import leojay.tools.java.database2.mysql.MySQLObject;
+import leojay.tools.java.database2.base.MyOperation;
 
 /**
  * <p>

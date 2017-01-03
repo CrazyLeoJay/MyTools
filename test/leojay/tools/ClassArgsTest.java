@@ -1,6 +1,6 @@
 package leojay.tools;
 
-import leojay.tools.class_serialization.ClassArgs;
+import leojay.tools.java.class_serialization.ClassArgs;
 import org.junit.Test;
 
 import java.util.HashMap;
