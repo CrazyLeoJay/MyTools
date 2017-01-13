@@ -18,7 +18,7 @@ public interface MyConnection<F> {
      * leojay.tools.database2.mysql.MySQLOperation类的
      * SQLRequest(MyOperation.Mode, OnResponse)方法，如下连接
      *
-     * @param listener
+     * @param listener 链接监听
      */
     void connect(OnConnectListener<F> listener);
 
@@ -40,6 +40,7 @@ public interface MyConnection<F> {
          * 数据库操作的具体实现
          *
          * @param conn 链接类
+         * @throws Exception 读写操作异常捕获
          */
         void done(F conn) throws Exception;
 

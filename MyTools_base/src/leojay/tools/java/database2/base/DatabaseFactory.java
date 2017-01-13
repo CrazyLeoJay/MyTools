@@ -43,6 +43,8 @@ public abstract class DatabaseFactory<DObject extends DatabaseObject,
     /**
      * 获得一个操作类
      *
+     * @param DObjectClass 当前类
+     * @param objectClass  根类
      * @return 操作类
      */
     public abstract Operation createOperation(DObject DObjectClass, Class<? extends DObject> objectClass);

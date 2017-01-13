@@ -109,6 +109,7 @@ public class QRCodeUtil {
      * @param logoPath     LOGO地址
      * @param destPath     存放目录
      * @param needCompress 是否压缩LOGO
+     * @return 文件名称
      * @throws Exception
      */
     public static String encode(String content, String logoPath, String destPath, boolean needCompress) throws Exception {
@@ -158,6 +159,7 @@ public class QRCodeUtil {
      * @param content  内容
      * @param logoPath LOGO地址
      * @param destPath 存储地址
+     *                 @return 文件名称
      * @throws Exception
      */
     public static String encode(String content, String logoPath, String destPath) throws Exception {
@@ -171,6 +173,7 @@ public class QRCodeUtil {
      * @param destPath     存储地址
      * @param needCompress 是否压缩LOGO
      * @throws Exception
+     * @return 文件名称
      */
     public static String encode(String content, String destPath, boolean needCompress) throws Exception {
         return QRCodeUtil.encode(content, null, destPath, needCompress);
@@ -182,6 +185,7 @@ public class QRCodeUtil {
      * @param content  内容
      * @param destPath 存储地址
      * @throws Exception
+     * @return 文件名称
      */
     public static String encode(String content, String destPath) throws Exception {
         return QRCodeUtil.encode(content, null, destPath, false);

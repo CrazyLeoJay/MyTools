@@ -1,6 +1,7 @@
 package leojay.tools.class_serialization;
 
 import leojay.tools.java.class_serialization.JSONClass;
+import leojay.tools.java.class_serialization.JSONResponse;
 import leojay.tools.json.User;
 import org.junit.Before;
 import org.junit.Test;
@@ -25,7 +26,8 @@ public class JSONClassTest {
     @Test
     public void create() throws Exception {
         String stringFromClass = JSONClass.create(User.class).getJSONStringFromClass(user);
-        User user2 = JSONClass.create(User.class).getClassFromJSONString(stringFromClass);
+        JSONResponse<User> jsonString = JSONClass.create(User.class).getClassFromJSONString(stringFromClass);
+        User user2 = jsonString.getData();
         System.out.println("_____测试");
         System.out.println(user2.getName());
         System.out.println(user2.getGroup());
@@ -35,14 +37,14 @@ public class JSONClassTest {
 
     @Test
     public void onClassToJsonString() throws Exception {
-        JSONClass<User> jsonClass = new JSONClass<User>(User.class);
+        JSONClass<User> jsonClass = JSONClass.create(User.class);
         String s = jsonClass.getJSONStringFromClass(user);
         System.out.println("json string"+s);
-        User user2 = jsonClass.getClassFromJSONString(s);
+        JSONResponse<User> jsonString = jsonClass.getClassFromJSONString(s);
         System.out.println("_____测试");
-        System.out.println(user2.getName());
-        System.out.println(user2.getGroup());
-        System.out.println(user2.getAge() + "");
+        System.out.println(jsonString.getData().getName());
+        System.out.println(jsonString.getData().getGroup());
+        System.out.println(jsonString.getData().getAge() + "");
 
     }
 

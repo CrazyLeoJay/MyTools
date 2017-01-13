@@ -60,6 +60,8 @@ public abstract class DatabaseObject<Operation extends MyOperation> {
      * |        return factory.createOperation(this, .class);
      * |    }
      * </PRE>
+     *
+     * @return 一个操作对象
      */
     public abstract Operation getOperation();
 
@@ -114,6 +116,7 @@ public abstract class DatabaseObject<Operation extends MyOperation> {
      * @param t        被查询的表的类
      * @param mode     查询模式
      * @param listener 返回结果监听
+     * @param <T>      被操作的类
      * @see MyOperation#selectData(SelectMode, MyOperation.OnResultListener)
      */
     public <T extends DatabaseObject> void selectData(Class<T> t, SelectMode mode, MyOperation.OnResultListener<T> listener) {
@@ -125,6 +128,7 @@ public abstract class DatabaseObject<Operation extends MyOperation> {
      *
      * @param t        被查询的表的类
      * @param listener 返回结果监听
+     * @param <T>      被操作的类
      * @see MyOperation#selectData(SelectMode, MyOperation.OnResultListener)
      */
     public <T extends DatabaseObject> void selectData(Class<T> t, MyOperation.OnResultListener<T> listener) {
@@ -188,6 +192,8 @@ public abstract class DatabaseObject<Operation extends MyOperation> {
 
     /**
      * 获得主键
+     *
+     * @return 主键
      */
     public String getUniqueId() {
         return uniqueId;
@@ -204,6 +210,8 @@ public abstract class DatabaseObject<Operation extends MyOperation> {
 
     /**
      * 获得创建时间
+     *
+     * @return 创建时间
      */
     public String getCreateTime() {
         return createTime;
@@ -220,6 +228,7 @@ public abstract class DatabaseObject<Operation extends MyOperation> {
 
     /**
      * 获得更新时间
+     * @return 更新时间
      */
     public String getUpdateTime() {
         return updateTime;

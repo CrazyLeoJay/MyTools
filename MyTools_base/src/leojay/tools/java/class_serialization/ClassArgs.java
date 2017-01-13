@@ -57,10 +57,11 @@ public final class ClassArgs {
     }
 
     /**
-     * @param f         当前对象的类，或者它的父类
-     * @param isValue   是否有值,若为false，则 baseClass 参数将不起任何作用
-     * @param baseClass 解析对象，即当前对象
-     * @param <K>       当前对象！
+     * @param f           当前对象的类，或者它的父类
+     * @param objectClass 父类
+     * @param isValue     是否有值,若为false，则 baseClass 参数将不起任何作用
+     * @param baseClass   解析对象，即当前对象
+     * @param <K>         当前对象！
      * @return 参数列表
      */
     private static <K> List<HashMap<String, String>> getThisAndSupersClassArgs(final Class<?> f, Class<?> objectClass,
@@ -183,10 +184,13 @@ public final class ClassArgs {
         try {
             t = (T) Class.forName(f.getName()).newInstance();
         } catch (InstantiationException e) {
+            QLog.e(ClassArgs.class, "初始化对象失败");
             e.printStackTrace();
         } catch (IllegalAccessException e) {
+            QLog.e(ClassArgs.class, "访问权限不够");
             e.printStackTrace();
         } catch (ClassNotFoundException e) {
+            QLog.e(ClassArgs.class, "找不到类");
             e.printStackTrace();
         }
         return t;

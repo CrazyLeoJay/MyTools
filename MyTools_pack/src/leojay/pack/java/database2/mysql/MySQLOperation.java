@@ -386,7 +386,7 @@ public class MySQLOperation<F extends DatabaseObject> extends MyOperation<F, OnR
     /**
      * 查询数据，默认查找模式为精确查找
      *
-     * @param listener
+     * @param listener 搜索数据结果监听
      */
     public void selectData(final OnResultListener<F> listener) {
         selectData(SelectMode.ADD, listener);
@@ -437,6 +437,7 @@ public class MySQLOperation<F extends DatabaseObject> extends MyOperation<F, OnR
      *
      * @param <T> 继承与DBListener 接口的类，或者直接继承本类
      * @param t   被操作数据表类
+     * @return 布尔值，表示是否有该表
      */
     private <T extends F> boolean isTab(final T t) {
         //查看是否设定数据表名称, 若无,则以类名表述
@@ -495,8 +496,8 @@ public class MySQLOperation<F extends DatabaseObject> extends MyOperation<F, OnR
     /**
      * 获取 sql 中的 属性 字段部分
      *
-     * @param type
-     * @return
+     * @param type 文件类型
+     * @return 相应的SQL语句
      */
     private String typeFilter(String type) {
         if (type.equals("string") || type.equals("String")) {
@@ -510,8 +511,8 @@ public class MySQLOperation<F extends DatabaseObject> extends MyOperation<F, OnR
     /**
      * 获取 sql 中的 id 字段部分
      *
-     * @param mode
-     * @return
+     * @param mode sql模式
+     * @return 相应的SQL语句
      */
     @Override
     protected String getIdSql(IDMode mode) {

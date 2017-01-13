@@ -4,7 +4,6 @@ package leojay.tools.java.database2.base;
  * 配置类，这个接口里可以配置数据库的基本参数，当然可以按照需求来填写，
  * 已经实现的方法是一般数据库都需要的参数
  * <p>
- * <p>
  * time:16/11/30__12:55
  *
  * @author leojay

@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/ClearDoc/ClearDoc.iml" filepath="$PROJECT_DIR$/ClearDoc/ClearDoc.iml" />
       <module fileurl="file://$PROJECT_DIR$/MyTools.iml" filepath="$PROJECT_DIR$/MyTools.iml" />
+      <module fileurl="file://$PROJECT_DIR$/MyToolsClient/MyToolsClient.iml" filepath="$PROJECT_DIR$/MyToolsClient/MyToolsClient.iml" />
       <module fileurl="file://$PROJECT_DIR$/MyTools_base/MyTools_base.iml" filepath="$PROJECT_DIR$/MyTools_base/MyTools_base.iml" />
       <module fileurl="file://$PROJECT_DIR$/MyTools_pack/MyTools_pack.iml" filepath="$PROJECT_DIR$/MyTools_pack/MyTools_pack.iml" />
     </modules>

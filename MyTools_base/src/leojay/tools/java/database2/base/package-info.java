@@ -18,6 +18,5 @@
  * time:16/12/3__17:46
  *
  * @author:leojay
- * @see leojay.tools.database2
  */
 package leojay.tools.java.database2.base;

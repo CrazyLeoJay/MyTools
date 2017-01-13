@@ -28,7 +28,7 @@ class MySQLFactory<F extends DatabaseObject> extends DatabaseFactory<MySQLObject
     /**
      * 创建一个数据库链接
      *
-     * @return
+     * @return 返回一个链接对象
      */
     @Override
     public MySQLConnect createConnect() {

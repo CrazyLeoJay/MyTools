@@ -116,6 +116,7 @@ public final class ReadProperties {
      *
      * @param mode url模式
      * @param url  文件路径
+     * @return Properties
      */
     private Properties readConfig(InputMode mode, String url) {
         Properties properties = new Properties();
@@ -188,6 +189,7 @@ public final class ReadProperties {
      *
      * @param properties 将要写入的 配置文件对象
      * @param configName 将要写入的配置文件的名称
+     * @param url        写入路径
      */
     private void writeConfig(Properties properties, String configName, String url) {
         File f = new File(url);
