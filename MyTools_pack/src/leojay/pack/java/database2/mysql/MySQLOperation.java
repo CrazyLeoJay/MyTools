@@ -2,10 +2,7 @@ package leojay.pack.java.database2.mysql;
 
 import leojay.tools.java.MyToolsException;
 import leojay.tools.java.QLog;
-import leojay.tools.java.database2.base.DatabaseObject;
-import leojay.tools.java.database2.base.MyConnection;
-import leojay.tools.java.database2.base.MyOperation;
-import leojay.tools.java.database2.base.SelectMode;
+import leojay.tools.java.database2.base.*;
 
 import java.lang.reflect.Field;
 import java.sql.Connection;
@@ -59,10 +56,11 @@ public class MySQLOperation<F extends DatabaseObject> extends MyOperation<F, OnR
      */
     @Override
     public void SQLRequest(final Mode mode, final OnResponseListener listener) {
+
         connect.connect(new MyConnection.OnConnectListener<Connection>() {
             @Override
             public void onError(String error) {
-                listener.onError(error);
+                if (listener != null) listener.onError(error);
             }
 
             @Override
@@ -99,11 +97,11 @@ public class MySQLOperation<F extends DatabaseObject> extends MyOperation<F, OnR
 //                } catch (SQLException e) {
 //                    QLog.w(this, QLOG_KEY, "发生数据库访问错误！:" + e.getMessage());
 //                    e.printStackTrace();
-//                    listener.onError(e.getMessage());
+//                    if (listener != null)listener.onError(e.getMessage());
 //                } catch (Exception e) {
 //                    QLog.w(this, QLOG_KEY, "此次sql语句执行失败！:" + e.getMessage());
 //                    e.printStackTrace();
-//                    listener.onError(e.getMessage());
+//                    if (listener != null)listener.onError(e.getMessage());
 //                }
 
             }
@@ -112,9 +110,11 @@ public class MySQLOperation<F extends DatabaseObject> extends MyOperation<F, OnR
 
     /**
      * 创建数据表，先会检查该表是否存在，若不存在就创建该表。
+     *
+     * @param listener 结果监听，可为空
      */
     @Override
-    public void createTable() {
+    public void createTable(final ReadWriteResultListener listener) {
         isTab = isTab(f);
 //        3. 若 isTab = false, 则说明数据中没有该表, 则读取该类数据, 创建数据表
         if (!isTab) {
@@ -124,6 +124,7 @@ public class MySQLOperation<F extends DatabaseObject> extends MyOperation<F, OnR
 
                 @Override
                 public String onError(String error) {
+                    if (listener != null) listener.onError(error);
                     return error;
                 }
 
@@ -159,13 +160,14 @@ public class MySQLOperation<F extends DatabaseObject> extends MyOperation<F, OnR
                 public void responseResult(Mode mode, ResultSet resultSet, boolean b, int i) {
                     QLog.i(this, QLOG_KEY, "创建数据表" + f.getTableName() + "成功, 是否有返回结果:" + b);
                     sqlList.add(f.getTableName());
+                    if (listener != null) listener.onAfter();
                 }
             });
         }
     }
 
     @Override
-    public void deleteTable() {
+    public void deleteTable(final ReadWriteResultListener listener) {
         if (isTab(f)) {
             QLog.i(this, QLOG_KEY, "数据表" + f.getTableName() + "存在, 可以删除……");
             SQLRequest(Mode.UPDATE, new OnResponseListener() {
@@ -176,10 +178,12 @@ public class MySQLOperation<F extends DatabaseObject> extends MyOperation<F, OnR
                     } else {
                         QLog.i(this, QLOG_KEY, "删除数据表失败， 参数" + i);
                     }
+                    if (listener != null) listener.onAfter();
                 }
 
                 @Override
                 public String onError(String error) {
+                    if (listener != null) listener.onError(error);
                     return null;
                 }
 
@@ -197,9 +201,11 @@ public class MySQLOperation<F extends DatabaseObject> extends MyOperation<F, OnR
      * 写入数据，先判断主键模式，若不是自动增长模式，且主键为空，就发生一个异常。
      * <p>
      * 写入的数据若附加更新时间和写入时间，将会直接写入当前时间
+     *
+     * @param listener 结果监听，可为空
      */
     @Override
-    public void writeData() {
+    public void writeData(final ReadWriteResultListener listener) {
         switch (getIdMode()) {
             case MODE_AUTO:
                 f.setUniqueId(null);
@@ -223,6 +229,7 @@ public class MySQLOperation<F extends DatabaseObject> extends MyOperation<F, OnR
         SQLRequest(Mode.COMMON, new OnResponseListener() {
             @Override
             public String onError(String error) {
+                if (listener != null) listener.onError(error);
                 return error;
             }
 
@@ -269,19 +276,23 @@ public class MySQLOperation<F extends DatabaseObject> extends MyOperation<F, OnR
             @Override
             public void responseResult(Mode mode, ResultSet resultSet, boolean b, int i) throws SQLException {
                 QLog.i(this, QLOG_KEY, "执行成功！");
+                if (listener != null) listener.onAfter();
             }
         });
     }
 
     /**
      * 删除数据，根据主键删除数据，主键不能为空！但主键为空时也不会包异常，但是不会执行任何操作
+     *
+     * @param listener 结果监听，可为空
      */
     @Override
-    public void deleteData() {
+    public void deleteData(final ReadWriteResultListener listener) {
         if (this.f.getUniqueId() != null) {
             SQLRequest(Mode.UPDATE, new OnResponseListener() {
                 @Override
                 public String onError(String error) {
+                    if (listener != null) listener.onError(error);
                     return error;
                 }
 
@@ -293,6 +304,7 @@ public class MySQLOperation<F extends DatabaseObject> extends MyOperation<F, OnR
                 @Override
                 public void responseResult(Mode mode, ResultSet resultSet, boolean b, int i) throws SQLException {
                     QLog.i(this, QLOG_KEY, "共删掉了 " + i + " 条数据！");
+                    if (listener != null) listener.onAfter();
                 }
             });
         } else {
@@ -378,7 +390,7 @@ public class MySQLOperation<F extends DatabaseObject> extends MyOperation<F, OnR
                     if (isUpdateTimeField) fs.setUpdateTime(resultSet.getString(resultSet.findColumn(F.UPDATE_TIME)));
                     result.add(fs);
                 }
-                listener.result(result);
+                if (listener != null) listener.result(result);
             }
         });
     }
@@ -397,13 +409,16 @@ public class MySQLOperation<F extends DatabaseObject> extends MyOperation<F, OnR
      * <p>
      * 以主键为主，根据主键查找数据并修改
      * 但只修该对象里有值得参数所对应的数据表字段
+     *
+     * @param listener 结果监听，可为空
      */
     @Override
-    public void updateData() {
+    public void updateData(final ReadWriteResultListener listener) {
 
         SQLRequest(Mode.UPDATE, new OnResponseListener() {
             @Override
             public String onError(String error) {
+                if (listener != null) listener.onError(error);
                 return null;
             }
 
@@ -427,7 +442,7 @@ public class MySQLOperation<F extends DatabaseObject> extends MyOperation<F, OnR
 
             @Override
             public void responseResult(Mode mode, ResultSet resultSet, boolean b, int i) throws Exception {
-
+                if (listener != null) listener.onAfter();
             }
         });
     }
@@ -532,5 +547,6 @@ public class MySQLOperation<F extends DatabaseObject> extends MyOperation<F, OnR
         }
         return result;
     }
+
 
 }

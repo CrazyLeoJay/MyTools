@@ -96,13 +96,29 @@ public abstract class MyOperation<F extends DatabaseObject, L extends OnResponse
 
     protected abstract String getIdSql(IDMode mode);
 
-    public abstract void createTable();
+    public abstract void createTable(ReadWriteResultListener listener);
 
-    public abstract void deleteTable();
+    public void createTable() {
+        createTable(nullListener);
+    }
 
-    public abstract void writeData();
+    public abstract void deleteTable(ReadWriteResultListener listener);
 
-    public abstract void deleteData();
+    public void deleteTable() {
+        deleteTable(nullListener);
+    }
+
+    public abstract void writeData(ReadWriteResultListener listener);
+
+    public void writeData() {
+        writeData(nullListener);
+    }
+
+    public abstract void deleteData(ReadWriteResultListener listener);
+
+    public void deleteData() {
+        deleteData(nullListener);
+    }
 
     /**
      * 查询数据
@@ -115,7 +131,11 @@ public abstract class MyOperation<F extends DatabaseObject, L extends OnResponse
     /**
      * 更新数据
      */
-    public abstract void updateData();
+    public abstract void updateData(ReadWriteResultListener listener);
+
+    public void updateData() {
+        updateData(nullListener);
+    }
 
     /**
      * 获得主键模式
@@ -228,4 +248,15 @@ public abstract class MyOperation<F extends DatabaseObject, L extends OnResponse
         }
     }
 
+    private ReadWriteResultListener nullListener = new ReadWriteResultListener() {
+        @Override
+        public void onError(String error) {
+
+        }
+
+        @Override
+        public void onAfter() {
+
+        }
+    };
 }

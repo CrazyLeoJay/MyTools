@@ -20,7 +20,7 @@ public class MySQLObject extends DatabaseObject<MySQLOperation<MySQLObject>> {
      */
     protected MySQLObject() {
         factory = new MySQLFactory<MySQLObject>();
-        createTable();
+        getOperation().createTable();
     }
 
     /**
