@@ -20,17 +20,17 @@ import java.util.List;
  *
  * @author:leojay
  */
-public class MySQLOperation<F extends DatabaseObject> extends MyOperation<F, OnResponseListener> {
+public class MySQLOperation<F extends DatabaseBase> extends MyOperation<F, MyConnection<Connection>, OnResponseListener> {
     private static final String QLOG_KEY = "MySQLOperation.class";
 
     //判断是否建立数据表
     private boolean isTab = false;
     //判断是否添加创建时间字段
-    private boolean isCreateTimeField = true;
+    public boolean isCreateTimeField = true;
     //判断是否添加更新时间字段
-    private boolean isUpdateTimeField = true;
+    public boolean isUpdateTimeField = true;
     //数据库数据表列表
-    private static List<String> sqlList = new ArrayList<String>();
+    public static List<String> sqlList = new ArrayList<String>();
 
     private MyConnection<Connection> connect;
 
@@ -41,8 +41,8 @@ public class MySQLOperation<F extends DatabaseObject> extends MyOperation<F, OnR
      * @param f           数据类
      * @param objectClass 基本类
      */
-    MySQLOperation(MyConnection<Connection> connect, F f, Class<? extends DatabaseObject> objectClass) {
-        super(f, objectClass);
+    public MySQLOperation(MyConnection<Connection> connect, F f, Class<?> objectClass) {
+        super(connect, f, objectClass);
         this.connect = connect;
     }
 
@@ -56,7 +56,6 @@ public class MySQLOperation<F extends DatabaseObject> extends MyOperation<F, OnR
      */
     @Override
     public void SQLRequest(final Mode mode, final OnResponseListener listener) {
-
         connect.connect(new MyConnection.OnConnectListener<Connection>() {
             @Override
             public void onError(String error) {
@@ -240,13 +239,18 @@ public class MySQLOperation<F extends DatabaseObject> extends MyOperation<F, OnR
                 List<HashMap<String, String>> classArgs = getClassArgs();
                 int i = 2;
                 int j = 0;
+                List<HashMap<String, String>> dataBufferd = new ArrayList<HashMap<String, String>>();
                 for (HashMap<String, String> map : classArgs) {
-                    String name = map.get("name");
                     String value = map.get("value");
                     if (value == null || value.equals("0") || value.equals("null")) {
                         i++;
                         continue;
                     }
+                    dataBufferd.add(map);
+                }
+                for (HashMap<String, String> map : dataBufferd){
+                    String name = map.get("name");
+                    String value = map.get("value");
                     sql_item += "`" + name + "`";
                     sql_value += "'" + value + "'";
                     if (i < map.size()) {
@@ -454,7 +458,7 @@ public class MySQLOperation<F extends DatabaseObject> extends MyOperation<F, OnR
      * @param t   被操作数据表类
      * @return 布尔值，表示是否有该表
      */
-    private <T extends F> boolean isTab(final T t) {
+    public <T extends F> boolean isTab(final T t) {
         //查看是否设定数据表名称, 若无,则以类名表述
         if (t.getTableName() == null) {
             t.setTableName(t.getClass().getSimpleName().toLowerCase());
@@ -514,7 +518,7 @@ public class MySQLOperation<F extends DatabaseObject> extends MyOperation<F, OnR
      * @param type 文件类型
      * @return 相应的SQL语句
      */
-    private String typeFilter(String type) {
+    public String typeFilter(String type) {
         if (type.equals("string") || type.equals("String")) {
             type = "VARCHAR(255) default 'null'";
         } else if (type.equals("int") || type.equals("Integer")) {
@@ -530,7 +534,7 @@ public class MySQLOperation<F extends DatabaseObject> extends MyOperation<F, OnR
      * @return 相应的SQL语句
      */
     @Override
-    protected String getIdSql(IDMode mode) {
+    public String getIdSql(IDMode mode) {
         String result = " `" + F.UNId_ARG + "` VARCHAR(32) NOT NULL COMMENT '唯一ID' ";
         switch (mode) {
             case MODE_AUTO:

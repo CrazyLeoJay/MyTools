@@ -15,12 +15,21 @@ public class MySQLObject extends DatabaseObject<MySQLOperation<MySQLObject>> {
     private MySQLFactory<MySQLObject> factory;
     private MySQLOperation<MySQLObject> operation;
 
+    private Class<? extends DatabaseObject> objectClass = MySQLObject.class;
+
     /**
      * 构造函数
      */
-    protected MySQLObject() {
-        factory = new MySQLFactory<MySQLObject>();
-        getOperation().createTable();
+    protected MySQLObject(String url, String configName) {
+        factory = new MySQLFactory<MySQLObject>(url, configName);
+//        getOperation().createTable();
+    }
+
+    public MySQLObject(String url, String configName, Class<? extends DatabaseObject> objectClass) {
+        this(url, configName);
+        if (objectClass != null) {
+            this.objectClass = objectClass;
+        }
     }
 
     /**
@@ -29,7 +38,7 @@ public class MySQLObject extends DatabaseObject<MySQLOperation<MySQLObject>> {
     @Override
     public MySQLOperation<MySQLObject> getOperation() {
         if (operation == null) {
-            operation = factory.createOperation(this, MySQLObject.class);
+            operation = factory.createOperation(this, objectClass);
         }
         return operation;
     }

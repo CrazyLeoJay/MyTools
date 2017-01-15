@@ -149,7 +149,6 @@ public final class JSONClass<T> {
             } catch (JSONException e) {
                 QLog.w(this, "异常值！");
                 e.printStackTrace();
-
             }
             System.out.println("---------------------------------");
             System.out.println("当前值：" + ns + " = " + name);

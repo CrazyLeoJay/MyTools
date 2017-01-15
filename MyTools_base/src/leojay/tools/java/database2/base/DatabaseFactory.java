@@ -23,7 +23,7 @@ package leojay.tools.java.database2.base;
  * @param <Operation>  数据库操作
  * @author:leojay
  */
-public abstract class DatabaseFactory<DObject extends DatabaseObject,
+public abstract class DatabaseFactory<DObject extends DatabaseBase,
         Config extends MyConfig, Connection extends MyConnection, Operation extends MyOperation> {
     /**
      * 设置配置文件
@@ -47,5 +47,5 @@ public abstract class DatabaseFactory<DObject extends DatabaseObject,
      * @param objectClass  根类
      * @return 操作类
      */
-    public abstract Operation createOperation(DObject DObjectClass, Class<? extends DObject> objectClass);
+    public abstract Operation createOperation(DObject DObjectClass, Class<? extends DatabaseObject> objectClass);
 }

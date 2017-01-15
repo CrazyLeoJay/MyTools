@@ -12,8 +12,16 @@ import leojay.tools.java.database2.base.DatabaseObject;
  * @author:leojay
  * @see DatabaseFactory
  */
-class MySQLFactory<F extends DatabaseObject> extends DatabaseFactory<MySQLObject,
-        MySQLMyConfig, MySQLConnect, MySQLOperation<MySQLObject>> {
+class MySQLFactory<F extends DatabaseObject> extends DatabaseFactory<F,
+        MySQLMyConfig, MySQLConnect, MySQLOperation<F>> {
+
+    private String url = "./src/config";
+    private String configName = "dbconfig";
+
+    public MySQLFactory(String url, String configName) {
+        if (null != url) this.url = url;
+        if (null != configName) this.configName = configName;
+    }
 
     /**
      * 创建一个配置
@@ -22,7 +30,7 @@ class MySQLFactory<F extends DatabaseObject> extends DatabaseFactory<MySQLObject
      */
     @Override
     public MySQLMyConfig createConfig() {
-        return new MySQLMyConfig("./src/config", "dbconfig");
+        return new MySQLMyConfig(url, configName);
     }
 
     /**
@@ -39,14 +47,14 @@ class MySQLFactory<F extends DatabaseObject> extends DatabaseFactory<MySQLObject
     /**
      * 创建一个数据库操作类
      *
-     * @param DObjectClass     操作类
-     * @param objectClass 基础类
+     * @param DObjectClass 操作类
+     * @param objectClass  基础类
      * @return 操作类
      */
     @Override
-    public MySQLOperation<MySQLObject> createOperation(MySQLObject DObjectClass,
-                                                       Class<? extends MySQLObject> objectClass) {
-        return new MySQLOperation<MySQLObject>(createConnect(), DObjectClass, objectClass);
+    public MySQLOperation<F> createOperation(F DObjectClass,
+                                             Class<? extends DatabaseObject> objectClass) {
+        return new MySQLOperation<F>(createConnect(), DObjectClass, objectClass);
     }
 
 }

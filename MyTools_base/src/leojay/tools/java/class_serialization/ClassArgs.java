@@ -181,13 +181,14 @@ public final class ClassArgs {
      */
     public static <T> T newInstance(Class<T> f) {
         T t = null;
+
         try {
             t = (T) Class.forName(f.getName()).newInstance();
         } catch (InstantiationException e) {
             QLog.e(ClassArgs.class, "初始化对象失败");
             e.printStackTrace();
         } catch (IllegalAccessException e) {
-            QLog.e(ClassArgs.class, "访问权限不够");
+            QLog.e(ClassArgs.class, "访问权限不够" + e.getMessage());
             e.printStackTrace();
         } catch (ClassNotFoundException e) {
             QLog.e(ClassArgs.class, "找不到类");

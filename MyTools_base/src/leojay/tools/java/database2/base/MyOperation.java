@@ -1,10 +1,10 @@
 package leojay.tools.java.database2.base;
 
 import leojay.tools.java.QLog;
+import leojay.tools.java.class_serialization.ClassArgs;
 
 import java.lang.reflect.Field;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -20,13 +20,14 @@ import java.util.List;
  * @see DatabaseObject#getOperation()
  * @see OnResponse
  */
-public abstract class MyOperation<F extends DatabaseObject, L extends OnResponse> {
+public abstract class MyOperation<F extends DatabaseBase,C extends MyConnection<?>, L extends OnResponse> {
     private static final String QLOG_KEY = "MyOperation.class";
 
     private IDMode idMode = IDMode.MODE_AUTO;
 
     protected F f;
-    private Class<?> objectClass;
+    private final Class<?> objectClass;
+    private final C connection;
 
     /**
      * 构造函数
@@ -34,9 +35,18 @@ public abstract class MyOperation<F extends DatabaseObject, L extends OnResponse
      * @param f           数据类，继承于本类
      * @param objectClass 基础类
      */
-    public MyOperation(F f, Class<?> objectClass) {
+    public MyOperation(C connection,F f, Class<?> objectClass) {
+        this.connection = connection;
         this.f = f;
         this.objectClass = objectClass;
+    }
+
+    public Class<?> getObjectClass() {
+        return objectClass;
+    }
+
+    public C getConnection() {
+        return connection;
     }
 
     /**
@@ -44,7 +54,7 @@ public abstract class MyOperation<F extends DatabaseObject, L extends OnResponse
      *
      * @param <DO> 查询结构返回的表类型
      */
-    public interface OnResultListener<DO extends DatabaseObject> {
+    public interface OnResultListener<DO extends DatabaseBase> {
         void result(List<DO> result);
     }
 
@@ -94,27 +104,27 @@ public abstract class MyOperation<F extends DatabaseObject, L extends OnResponse
      */
     public abstract void SQLRequest(final Mode mode, final L listener);
 
-    protected abstract String getIdSql(IDMode mode);
+    public abstract String getIdSql(IDMode mode);
 
-    public abstract void createTable(ReadWriteResultListener listener);
+    public abstract void createTable(final ReadWriteResultListener listener);
 
     public void createTable() {
         createTable(nullListener);
     }
 
-    public abstract void deleteTable(ReadWriteResultListener listener);
+    public abstract void deleteTable(final ReadWriteResultListener listener);
 
     public void deleteTable() {
         deleteTable(nullListener);
     }
 
-    public abstract void writeData(ReadWriteResultListener listener);
+    public abstract void writeData(final ReadWriteResultListener listener);
 
     public void writeData() {
         writeData(nullListener);
     }
 
-    public abstract void deleteData(ReadWriteResultListener listener);
+    public abstract void deleteData(final ReadWriteResultListener listener);
 
     public void deleteData() {
         deleteData(nullListener);
@@ -131,7 +141,7 @@ public abstract class MyOperation<F extends DatabaseObject, L extends OnResponse
     /**
      * 更新数据
      */
-    public abstract void updateData(ReadWriteResultListener listener);
+    public abstract void updateData(final ReadWriteResultListener listener);
 
     public void updateData() {
         updateData(nullListener);
@@ -176,31 +186,34 @@ public abstract class MyOperation<F extends DatabaseObject, L extends OnResponse
     public List<HashMap<String, String>> getClassArgs() throws Exception {
         if (f == null) throw new Exception("没有设置正确的数据类！！");
         if (objectClass == null) throw new Exception("没有设置基础类！！");
-        List<HashMap<String, String>> results = new ArrayList<HashMap<String, String>>();
-        Class<?> aClass = f.getClass();
-        String names = aClass.getName();
-        List<String> ns = new ArrayList<String>();
-        while (!names.equals(objectClass.getName())) {
-            Field[] declaredFields = aClass.getDeclaredFields();
-            if (declaredFields.length > 0) {
-                for (Field f_item : declaredFields) {
-                    f_item.setAccessible(true);
-                    String name = f_item.getName();
-                    if (name.contains("$")) continue;
-//                    if (ns.contains(name)) continue;
-                    ns.add(name);
-                    Object o = f_item.get(f);
-                    String value = (o == null ? null : o.toString());
-                    HashMap<String, String> map = new HashMap<String, String>();
-                    map.put("name", name);
-                    map.put("type", f_item.getType().getSimpleName());
-                    map.put("value", value);
-                    results.add(map);
-                }
-            }
-            aClass = aClass.getSuperclass();
-            names = aClass.getName();
-        }
+        List<HashMap<String, String>> results;
+        //使用现有的封装类
+        results = ClassArgs.getThisAndSupersClassArgs(f, objectClass);
+        //原来写的同样同能的实现
+//        Class<?> aClass = f.getClass();
+//        String names = aClass.getName();
+//        List<String> ns = new ArrayList<String>();
+//        while (!names.equals(objectClass.getName())) {
+//            Field[] declaredFields = aClass.getDeclaredFields();
+//            if (declaredFields.length > 0) {
+//                for (Field f_item : declaredFields) {
+//                    f_item.setAccessible(true);
+//                    String name = f_item.getName();
+//                    if (name.contains("$")) continue;
+////                    if (ns.contains(name)) continue;
+//                    ns.add(name);
+//                    Object o = f_item.get(f);
+//                    String value = (o == null ? null : o.toString());
+//                    HashMap<String, String> map = new HashMap<String, String>();
+//                    map.put("name", name);
+//                    map.put("type", f_item.getType().getSimpleName());
+//                    map.put("value", value);
+//                    results.add(map);
+//                }
+//            }
+//            aClass = aClass.getSuperclass();
+//            names = aClass.getName();
+//        }
         return results;
     }
 
