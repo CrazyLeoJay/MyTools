@@ -147,4 +147,22 @@ public final class ReflectionUtils {
 
         return null;
     }
+
+    public static boolean isSuperClass(final Object object, final Class<?> baseObject) {
+        if (baseObject == Object.class) return true;
+        String baseName = baseObject.getName();
+        if (Object.class.getName().equals(baseName)) return true;
+        Class<?> superclass = object.getClass();
+        boolean isSuper = false;
+        do {
+            if (Object.class.getName().equals(superclass.getName()))break;
+            isSuper = false;
+            if (superclass.getName().equals(baseName)) {
+                isSuper = true;
+                break;
+            }
+            superclass = superclass.getSuperclass();
+        } while (!isSuper);
+        return isSuper;
+    }
 }

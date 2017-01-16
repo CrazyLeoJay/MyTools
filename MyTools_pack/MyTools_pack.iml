@@ -28,5 +28,6 @@
     </orderEntry>
     <orderEntry type="module" module-name="MyTools_base" exported="" />
     <orderEntry type="library" scope="TEST" name="junit-4" level="application" />
+    <orderEntry type="module" module-name="Database" />
   </component>
 </module>

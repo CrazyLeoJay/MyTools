@@ -3,6 +3,9 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/ClearDoc/ClearDoc.iml" filepath="$PROJECT_DIR$/ClearDoc/ClearDoc.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Database/Database.iml" filepath="$PROJECT_DIR$/Database/Database.iml" group="Database" />
+      <module fileurl="file://$PROJECT_DIR$/Database_3.0/Database_3.0.iml" filepath="$PROJECT_DIR$/Database_3.0/Database_3.0.iml" group="Database" />
+      <module fileurl="file://$PROJECT_DIR$/Database_3.0_Mysql/Database_3.0_Mysql.iml" filepath="$PROJECT_DIR$/Database_3.0_Mysql/Database_3.0_Mysql.iml" group="Database" />
       <module fileurl="file://$PROJECT_DIR$/MyTools.iml" filepath="$PROJECT_DIR$/MyTools.iml" />
       <module fileurl="file://$PROJECT_DIR$/MyToolsClient/MyToolsClient.iml" filepath="$PROJECT_DIR$/MyToolsClient/MyToolsClient.iml" />
       <module fileurl="file://$PROJECT_DIR$/MyTools_base/MyTools_base.iml" filepath="$PROJECT_DIR$/MyTools_base/MyTools_base.iml" />

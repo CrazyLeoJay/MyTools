@@ -1,34 +1,29 @@
-package leojay.pack.java.database2.mysql;
+package leojay.tools.java.database;
 
 import leojay.tools.java.ReadProperties;
-import leojay.tools.java.database2.base.MyConfig;
 
 import java.util.Properties;
 
 /**
- * 配置类，用于数据库链接的基本配置
+ * 这是一个读取数据库配置文件的类，通过构造函数初始化。
  * <p>
- * time:16/11/30__13:05
- *
- * @author:leojay
- * @see MyConfig
+ * package:cn.ilinkerstudio.leojay.tools.java.database
+ * project: i-LinkerStudio
+ * author:leojay
+ * time:16/10/6__20:59
  */
-class MySQLMyConfig implements MyConfig {
-    private String DB_Driver;
-    private String DB_name;
-    private String DB_url;
+public class SQLConfig {
 
-    private String USER_NAME;
-    private String PASSWORD;
+    String DB_Driver;
+    String DB_name;
+    String DB_url;
+
+    String USER_NAME;
+    String PASSWORD;
+
     private static boolean isHaveConfig = false;
 
-    /**
-     * 构造函数
-     *
-     * @param url  配置文件地址，绝对地址
-     * @param name 配置文件名称，若为空，则使用默认：dbconfig
-     */
-    MySQLMyConfig(final String url, final String name) {
+    public SQLConfig(final String url, final String name) {
         ReadProperties dbconfig = new ReadProperties(new ReadProperties.InitConfig() {
             @Override
             public String FileName() {
@@ -81,27 +76,7 @@ class MySQLMyConfig implements MyConfig {
      *
      * @return 布尔值
      */
-    public boolean isHaveConfig() {
+    public static boolean isHaveConfig() {
         return isHaveConfig;
-    }
-
-    public String getDB_Driver() {
-        return DB_Driver;
-    }
-
-    public String getDB_name() {
-        return DB_name;
-    }
-
-    public String getDB_url() {
-        return DB_url;
-    }
-
-    public String getUSER_NAME() {
-        return USER_NAME;
-    }
-
-    public String getPASSWORD() {
-        return PASSWORD;
     }
 }
