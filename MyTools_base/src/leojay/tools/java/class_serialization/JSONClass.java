@@ -10,7 +10,6 @@ import org.codehaus.jackson.map.ObjectMapper;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.lang.reflect.Field;
-import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -115,15 +114,15 @@ public final class JSONClass<T> {
      * 这个方法会对对象<code>t</code>的参数添加值。
      *
      * @param t     被添加的对象
-     * @param map   数据源
+     * @param args   数据源
      * @param value 值
      * @param <K>   返回的数据类型
      * @throws IllegalAccessException 在赋值时候会产生异常
      * @see IllegalAccessException
      */
-    private <K> void setValue(final K t, HashMap<String, String> map, Object value) throws IllegalAccessException {
+    private <K> void setValue(final K t, Args args, Object value) throws IllegalAccessException {
         if (value == null) return;
-        Field field = ReflectionUtils.getDeclaredField(t, map.get("name"));
+        Field field = ReflectionUtils.getDeclaredField(t, args.getName());
         if (field != null) {
             field.setAccessible(true);
             field.set(t, value);
@@ -140,32 +139,32 @@ public final class JSONClass<T> {
      * @return 添加完数据后的对象k
      */
     private <K> K setValueForClass(K k, JSONObject jsonObject, OnValueListener<K> listener) {
-        List<HashMap<String, String>> classArgs = ClassArgs.getSingleClassArgs(k);
-        for (HashMap<String, String> itemMap : classArgs) {
-            String ns = itemMap.get("name");
-            Object name = null;
+        List<Args> classArgs = ClassArgs.getSingleClassArgs(k);
+        for (Args itemMap : classArgs) {
+            String ns = itemMap.getName();
+            Object value = null;
             try {
-                name = jsonObject.get(ns);
+                value = jsonObject.get(ns);
             } catch (JSONException e) {
                 QLog.w(this, "异常值！");
                 e.printStackTrace();
             }
-            System.out.println("---------------------------------");
-            System.out.println("当前值：" + ns + " = " + name);
-            System.out.println(name.getClass().getName());
-            if (name instanceof JSONObject) {
+//            System.out.println("---------------------------------");
+//            System.out.println("当前值：" + ns + " = " + value);
+//            System.out.println(value.getClass().getName());
+            if (value instanceof JSONObject) {
                 if (null != listener) {
-                    k = listener.onJsonObject(k, (JSONObject) name);
+                    k = listener.onJsonObject(k, (JSONObject) value);
                 }
                 continue;
             }
-            if (name instanceof JSONArray) {
-                if (null != listener) listener.onJsonArray((JSONArray) name);
+            if (value instanceof JSONArray) {
+                if (null != listener) listener.onJsonArray((JSONArray) value);
                 continue;
             }
-            if (name != null && !name.equals("null")) {
+            if (value != null && !value.equals("null")) {
                 try {
-                    setValue(k, itemMap, name);
+                    setValue(k, itemMap, value);
                 } catch (IllegalAccessException e) {
                     e.printStackTrace();
                 }

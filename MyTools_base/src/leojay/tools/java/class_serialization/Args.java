@@ -1,5 +1,6 @@
 package leojay.tools.java.class_serialization;
 
+
 /**
  * <p>
  * time: 17/1/16__15:28
@@ -9,7 +10,7 @@ package leojay.tools.java.class_serialization;
 public final class Args {
     private String name;
     private String className;
-    private Object value;
+    private String value;
     private String type;
     private String simpleName;
 
@@ -29,11 +30,11 @@ public final class Args {
         this.className = className;
     }
 
-    public Object getValue() {
+    public String getValue() {
         return value;
     }
 
-    public void setValue(Object value) {
+    public void setValue(String value) {
         this.value = value;
     }
 

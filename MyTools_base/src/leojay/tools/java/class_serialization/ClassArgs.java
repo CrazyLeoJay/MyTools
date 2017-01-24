@@ -23,7 +23,8 @@ public final class ClassArgs {
 
     /**
      * 这是一个不公开的私有类，这里实现的核心
-     * @param object 要操作的对象
+     *
+     * @param object      要操作的对象
      * @param objectClass 父类继承类，若为空默认则提取object对象里的参数，若不为空
      *                    会判断是否为object的父类，若不为父类，抛出异常，若为父类，
      *                    则提取出此类中对象object的相应参数。
@@ -53,7 +54,9 @@ public final class ClassArgs {
                 arg.setSimpleName(simpleClassName);
                 arg.setType(f_item.getType().getSimpleName());
                 Object o = ReflectionUtils.getFieldValue(object, name);
-                arg.setValue(o);
+                if (null != o) {
+                    arg.setValue(o.toString());
+                }
                 results.add(arg);
             }
         }
@@ -62,6 +65,7 @@ public final class ClassArgs {
 
     /**
      * 获取这个对象的所有参数
+     *
      * @param object 要操作的对象
      * @return 参数组
      */
@@ -71,6 +75,7 @@ public final class ClassArgs {
 
     /**
      * 当没有对象时，可通过类名获取相应的参数列表
+     *
      * @param aClass 要操作的对象的类
      * @return 参数组
      */
@@ -81,7 +86,8 @@ public final class ClassArgs {
 
     /**
      * 获取一个对象的参数，包括父类的参数
-     * @param object 要操作的对象
+     *
+     * @param object     要操作的对象
      * @param baseObject 截止父类，若为空默认为Object，若不为父类抛出异常
      * @return 参数组
      */
@@ -113,8 +119,10 @@ public final class ClassArgs {
         }
         return null;
     }
+
     /**
      * 获取一个对象的参数，包括父类的参数
+     *
      * @param object 要操作的对象
      * @return 参数组
      */
@@ -124,7 +132,8 @@ public final class ClassArgs {
 
     /**
      * 获取一个对象的参数，包括父类的参数
-     * @param aClass 要操作的对象的类
+     *
+     * @param aClass     要操作的对象的类
      * @param baseObject 截止父类，若为空默认为Object，若不为父类抛出异常
      * @return 参数组
      */
@@ -134,6 +143,7 @@ public final class ClassArgs {
 
     /**
      * 获取一个对象的参数，包括父类的参数
+     *
      * @param aClass 要操作的对象的类
      * @return 参数组
      */

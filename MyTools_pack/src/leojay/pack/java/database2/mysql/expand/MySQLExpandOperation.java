@@ -4,6 +4,7 @@ import leojay.pack.java.database2.mysql.MySQLOperation;
 import leojay.pack.java.database2.mysql.OnResponseListener;
 import leojay.tools.java.MyToolsException;
 import leojay.tools.java.QLog;
+import leojay.tools.java.class_serialization.Args;
 import leojay.tools.java.class_serialization.ClassArgs;
 import leojay.tools.java.database2.base.MyConnection;
 import leojay.tools.java.database2.base.ReadWriteResultListener;
@@ -16,7 +17,6 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import static leojay.tools.java.database2.base.DatabaseBase.*;
@@ -70,13 +70,13 @@ public class MySQLExpandOperation<T> extends DBExpandOperation<T, OnResponseList
                 @Override
                 public String toSQLInstruct() {
 
-                    List<HashMap<String, String>> classArgs = null;
+                    List<Args> classArgs = null;
                     String result = "";
                     try {
                         classArgs = ClassArgs.getThisAndSupersClassArgs(f.getTableClass(), getObjectClass());
-                        for (HashMap<String, String> item : classArgs) {
-                            String name = item.get("name");
-                            String type = operation.typeFilter(item.get("type"));
+                        for (Args item : classArgs) {
+                            String name = item.getName();
+                            String type = operation.typeFilter(item.getType());
                             result += ", `" + name + "` " + type;
                         }
                     } catch (Exception e) {
@@ -143,25 +143,25 @@ public class MySQLExpandOperation<T> extends DBExpandOperation<T, OnResponseList
             public String toSQLInstruct() throws Exception {
                 String sql_item = "";
                 String sql_value = "";
-                List<HashMap<String, String>> classArgs;
+                List<Args> classArgs;
                 classArgs = ClassArgs.getThisAndSupersClassArgs(f.getTableClass(), getObjectClass());
                 int i = 2;
                 int j = 0;
-                List<HashMap<String, String>> dataBufferd = new ArrayList<HashMap<String, String>>();
-                for (HashMap<String, String> map : classArgs) {
-                    String value = map.get("value");
+                List<Args> dataBufferd = new ArrayList<Args>();
+                for (Args map : classArgs) {
+                    String value = map.getValue();
                     if (value == null || value.equals("0") || value.equals("null")) {
                         i++;
                         continue;
                     }
                     dataBufferd.add(map);
                 }
-                for (HashMap<String, String> map : dataBufferd){
-                    String name = map.get("name");
-                    String value = map.get("value");
+                for (Args map : dataBufferd){
+                    String name = map.getName();
+                    String value = map.getValue();
                     sql_item += "`" + name + "`";
                     sql_value += "'" + value + "'";
-                    if (i < map.size()) {
+                    if (i < dataBufferd.size()) {
                         sql_item += ", ";
                         sql_value += ", ";
                     }
@@ -226,14 +226,14 @@ public class MySQLExpandOperation<T> extends DBExpandOperation<T, OnResponseList
                     where = "`" + UNId_ARG + "`='" + f.getUniqueId() + "' ";
                     i++;
                 }
-                List<HashMap<String, String>> classArgs;
+                List<Args> classArgs;
                 classArgs = ClassArgs.getThisAndSupersClassArgs(f.getTableClass(), getObjectClass());
 
-                for (HashMap<String, String> map : classArgs) {
-                    String value = map.get("value");
+                for (Args map : classArgs) {
+                    String value = map.getValue();
                     if (value != null && !value.equals("0")) {
                         if (i != 0) where += way;
-                        where += " `" + map.get("name") + "`='" + map.get("value") + "' ";
+                        where += " `" + map.getName() + "`='" + map.getValue() + "' ";
                         i++;
                     }
                 }
@@ -254,14 +254,14 @@ public class MySQLExpandOperation<T> extends DBExpandOperation<T, OnResponseList
             @Override
             public void responseResult(Mode mode, ResultSet resultSet, boolean b, int i) throws Exception {
                 List<DBExpandObject<T>> result = new ArrayList<DBExpandObject<T>>();
-                List<HashMap<String, String>> classArgs;
+                List<Args> classArgs;
                 classArgs = ClassArgs.getThisAndSupersClassArgs(f.getTableClass(), getObjectClass());
                 while (resultSet.next()) {
                     T fs;
                     fs = (T) Class.forName(f.getTableClass().getClass().getName()).newInstance();
-                    for (HashMap<String, String> item : classArgs) {
-                        Object name = resultSet.getObject(resultSet.findColumn(item.get("name")));
-                        Field fie = fs.getClass().getDeclaredField(item.get("name"));
+                    for (Args item : classArgs) {
+                        Object name = resultSet.getObject(resultSet.findColumn(item.getName()));
+                        Field fie = fs.getClass().getDeclaredField(item.getName());
                         fie.setAccessible(true);
                         fie.set(fs, name);
                     }
@@ -294,13 +294,13 @@ public class MySQLExpandOperation<T> extends DBExpandOperation<T, OnResponseList
             @Override
             public String toSQLInstruct() throws Exception {
                 String sql_last = "";
-                List<HashMap<String, String>> classArgs;
+                List<Args> classArgs;
                 classArgs = ClassArgs.getThisAndSupersClassArgs(f.getTableClass(), getObjectClass());
                 int i = 0;
-                for (HashMap<String, String> map : classArgs) {
-                    String value = map.get("value");
+                for (Args map : classArgs) {
+                    String value = map.getValue();
                     if (value != null && !value.equals("0")) {
-                        sql_last += "`" + map.get("name") + "`='" + value + "', ";
+                        sql_last += "`" + map.getName() + "`='" + value + "', ";
                         i++;
                     }
                 }

@@ -1,10 +1,10 @@
 package leojay.tools.java.database3;
 
+import leojay.tools.java.class_serialization.Args;
 import leojay.tools.java.class_serialization.ClassArgs;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -13,7 +13,7 @@ import java.util.List;
  *
  * @author leojay
  */
-public class DatabaseObjectTest {
+public class DatabaseObjectFactoryTest {
 
     @Before
     public void setUp() throws Exception {
@@ -26,11 +26,11 @@ public class DatabaseObjectTest {
         T1 t1 = new T1();
         t1.setName("hello");
         t2.setObject(t1);
-        List<HashMap<String, String>> classArgs = ClassArgs.getSingleClassArgs(t2.getObject());
-        for (HashMap<String, String> item: classArgs){
+        List<Args> classArgs = ClassArgs.getSingleClassArgs(t2.getObject());
+        for (Args item: classArgs){
             System.out.println("---------------------");
-            System.out.println(item.get("name"));
-            System.out.println(item.get("value"));
+            System.out.println(item.getName());
+            System.out.println(item.getValue());
         }
 
     }

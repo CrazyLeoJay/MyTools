@@ -1,10 +1,12 @@
 package leojay.tools.java.database2.base;
 
 import leojay.tools.java.QLog;
+import leojay.tools.java.class_serialization.Args;
 import leojay.tools.java.class_serialization.ClassArgs;
 
 import java.lang.reflect.Field;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -186,9 +188,19 @@ public abstract class MyOperation<F extends DatabaseBase,C extends MyConnection<
     public List<HashMap<String, String>> getClassArgs() throws Exception {
         if (f == null) throw new Exception("没有设置正确的数据类！！");
         if (objectClass == null) throw new Exception("没有设置基础类！！");
-        List<HashMap<String, String>> results;
+        List<Args> results;
+        List<HashMap<String, String>> results2 = new ArrayList<HashMap<String, String>>();
         //使用现有的封装类
         results = ClassArgs.getThisAndSupersClassArgs(f, objectClass);
+        //为了不影响原始使用，装换为HashMap
+        for (Args args : results){
+            HashMap<String, String> map = new HashMap<String, String>();
+            map.put("name", args.getName());
+            map.put("value", args.getValue().toString());
+            map.put("className", args.getClassName());
+            map.put("type", args.getType());
+            results2.add(map);
+        }
         //原来写的同样同能的实现
 //        Class<?> aClass = f.getClass();
 //        String names = aClass.getName();
@@ -214,7 +226,7 @@ public abstract class MyOperation<F extends DatabaseBase,C extends MyConnection<
 //            aClass = aClass.getSuperclass();
 //            names = aClass.getName();
 //        }
-        return results;
+        return results2;
     }
 
     /**

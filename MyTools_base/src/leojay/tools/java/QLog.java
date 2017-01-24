@@ -76,15 +76,18 @@ public final class QLog {
 
         String arg = "";
         if (key != null) {
-            arg = "(" + key + ")";
+            arg = key + ":";
         }
         String result =
                 "[" + data + "]" +
 //                " package: " + page +
 //                " \\|/ type:" +
                         type +
-                "_ " + arg +
-                "(" + ste.getFileName() + " :" + ste.getLineNumber() + "): " + message;
+                        "(" + ste.getFileName() + ":" + ste.getLineNumber() + ")" +
+//                        "\n------------------" +
+                        "\n" +
+                        "\n     |--> " + arg + message +
+                        "\n     ------------------------------------------------\n";
         System.out.println(result);
         return result;
     }
