@@ -55,6 +55,7 @@ public class MySQLManageTest {
         manage.getOperation().selectData(new ResultListener<List<DatabaseBase>>() {
             @Override
             public void after(StateMode mode, List<DatabaseBase> resultArg) {
+                if (mode == StateMode.SUCCESS)
                 for (DatabaseBase base : resultArg){
                     BTest tableClass = (BTest) base.getTableClass();
                     System.out.println("------------------------");

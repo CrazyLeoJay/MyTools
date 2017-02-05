@@ -25,6 +25,8 @@ public abstract class DatabaseOperation {
         this.databaseBase = dbb;
     }
 
+    public abstract boolean isTable();
+
     public abstract void createTable(final ResultListener<Boolean> listener);
 
     public void createTable() {

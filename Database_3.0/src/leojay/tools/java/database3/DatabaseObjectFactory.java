@@ -3,6 +3,7 @@ package leojay.tools.java.database3;
 import leojay.tools.java.database3.base.DatabaseConnection;
 import leojay.tools.java.database3.base.DatabaseOperation;
 import leojay.tools.java.database3.base.tools.DatabaseBase;
+import leojay.tools.java.database3.base.tools.DatabaseDefaultArgs;
 
 /**
  * 数据库工厂，继承与此类，通过<code>getOperation</code>来操作数据库操作
@@ -57,5 +58,13 @@ public abstract class DatabaseObjectFactory {
         if (operation == null) {
             this.operation = setOperation(base);
         }
+    }
+
+    public DatabaseDefaultArgs getDefaultArgs() {
+        return this.getOperation().getDatabaseBase().getDefaultArgs();
+    }
+
+    public void setDefaultArgs(DatabaseDefaultArgs defaultArgs){
+        this.getOperation().getDatabaseBase().setDefaultArgs(defaultArgs);
     }
 }

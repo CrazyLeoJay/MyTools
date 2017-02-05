@@ -9,12 +9,12 @@ import leojay.tools.java.database3.base.tools.DatabaseDefaultArgs;
  * 数据库工厂
  * <p>
  * time: 17/1/24__10:21
- *，
+ * ，
+ *
  * @author leojay
  */
 public abstract class DatabaseManage<T> {
     private T tableClass;
-    private DatabaseOperation operation;
 
     public DatabaseManage(T tableClass) {
         this.tableClass = tableClass;
@@ -29,7 +29,7 @@ public abstract class DatabaseManage<T> {
         this.tableClass = tableClass;
     }
 
-    public DatabaseDefaultArgs getDefaultArgs(){
+    public DatabaseDefaultArgs getDefaultArgs() {
         return getOperation().getDatabaseBase().getDefaultArgs();
     }
 
@@ -55,26 +55,16 @@ public abstract class DatabaseManage<T> {
      * @return 获取操作类
      */
     public DatabaseOperation getOperation() {
-        start();
-        return operation;
+        return setOperation(getBase());
     }
 
     private DatabaseBase base;
 
-    /**
-     * 进行初始化
-     */
-    private void start() {
+    public DatabaseBase getBase() {
         if (base == null) {
             base = new DatabaseBase(tableClass);
             base.setBaseObject(getBaseObject());
         }
-        if (operation == null) {
-            this.operation = setOperation(base);
-        }
-    }
-
-    public DatabaseBase getBase() {
         return base;
     }
 }

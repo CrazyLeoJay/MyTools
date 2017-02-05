@@ -28,10 +28,16 @@ public final class MySQLOperation extends DatabaseOperation {
     private DatabaseConnection<Connection> connection;
     private MySQLString mySQLString;
 
+    //判断是否建立数据表
+    private boolean isTab = false;
+    //数据库数据表列表
+    public static List<String> sqlList = new ArrayList<String>();
+
     public MySQLOperation(DatabaseConnection<Connection> connection, DatabaseBase dbb) {
         super(dbb);
         this.connection = connection;
         this.mySQLString = new MySQLString(dbb);
+        isTable();
     }
 
     /**
@@ -57,7 +63,7 @@ public final class MySQLOperation extends DatabaseOperation {
 
             @Override
             public void done(Connection conn) throws SQLException {
-//                QLog.i(this, QLOG_KEY, "即将执行的sql语句为: " + sql);
+//                QLog.i(this, "即将执行的sql语句为: " + sql);
                 StateMode stateMode = StateMode.NONE;
                 ResultSet resultData = null;
                 boolean b = false;
@@ -100,6 +106,58 @@ public final class MySQLOperation extends DatabaseOperation {
     }
 
     @Override
+    public boolean isTable() {
+        //查看是否设定数据表名称, 若无,则以类名表述
+        if (getDatabaseBase().getTableName() == null) {
+            getDatabaseBase().setTableName(getDatabaseBase().getClass().getSimpleName().toLowerCase());
+        }
+        isTab = false;
+        //1. 查询系统数据表列表 sqlList, 检查是否记录该表如若表存在, 则返回参数 isTab = true;
+        if (sqlList.size() > 0) {
+            for (String s : sqlList) {
+                if (getDatabaseBase().getTableName().equals(s)) {
+                    isTab = true;
+                    break;
+                }
+            }
+        }
+        //2. 若 isTab = false, 则说明数据表无记录, 读取数据库数据表列表, 查看是否有该表.若有, 则令 isTab = true;
+        //打开数据库连接
+        if (isTab) {
+            QLog.i(this, "系统记录中,数据表 " + getDatabaseBase().getTableName() + " 存在");
+        } else {
+            QLog.i(this, "系统记录中,数据表 " + getDatabaseBase().getTableName() + " 不存在");
+            QLog.i(this, "查询数据库中是否存在...");
+            SQLRequest(Mode.COMMON, "SHOW TABLES;", new OnResponseListener<ResultSet>() {
+                @Override
+                public void responseResult(StateMode mode, ResultSet resultData, boolean b, int i) {
+                    if (mode == StateMode.SUCCESS || b) {
+                        List<String> list = new ArrayList<String>();
+                        try {
+                            while (resultData.next()) {
+                                list.add(resultData.getString(1));
+                            }
+                        } catch (SQLException e) {
+                            e.printStackTrace();
+                        }
+                        if (list.size() > 0) {
+                            for (String item : list) {
+                                if (getDatabaseBase().getTableName().equals(item)) {
+                                    MySQLOperation.this.isTab = true;
+                                    sqlList.add(getDatabaseBase().getTableName());
+                                    QLog.i(this, "数据库中,数据表 " + getDatabaseBase().getTableName() + " 存在");
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+        }
+        return isTab;
+    }
+
+    @Override
     public void createTable(final ResultListener<Boolean> listener) {
         String createTableString = mySQLString.getSQL(SQLString.CMDMode.CREATE_TABLE);
         SQLRequest(Mode.UPDATE, createTableString, new OnResponseListener<ResultSet>() {
@@ -133,6 +191,10 @@ public final class MySQLOperation extends DatabaseOperation {
             public void responseResult(StateMode mode, ResultSet resultData, boolean b, int i) {
                 System.out.println(mode);
                 System.out.println("删除：" + i);
+                if (mode == StateMode.SUCCESS) {
+                    sqlList.remove(getDatabaseBase().getTableName());
+                }
+//                isTable();
                 listener.after(mode, b);
             }
         });
@@ -140,6 +202,10 @@ public final class MySQLOperation extends DatabaseOperation {
 
     @Override
     public void writeData(final ResultListener<Integer> listener) {
+        if (!isTab) {
+            QLog.i(this, "表不存在，正在创建，创建表后插入数据！");
+            createTable();
+        }
         String insertString = mySQLString.getInsertString();
         SQLRequest(Mode.UPDATE, insertString, new OnResponseListener<ResultSet>() {
             @Override
@@ -152,66 +218,84 @@ public final class MySQLOperation extends DatabaseOperation {
 
     @Override
     public void deleteData(ResultListener<Integer> listener) {
-        String deleteString = mySQLString.getDeleteString();
-        SQLRequest(Mode.UPDATE, deleteString, new OnResponseListener<ResultSet>() {
-            @Override
-            public void responseResult(StateMode mode, ResultSet resultData, boolean b, int i) {
+        if (isTab) {
+            if (getDatabaseBase().getDefaultArgs().getUniqueId() == null) {
+                QLog.e(this, "没有主键，无法删除！！");
+                listener.after(StateMode.ERROR, -1);
+            } else {
+                String deleteString = mySQLString.getDeleteString();
+                SQLRequest(Mode.UPDATE, deleteString, new OnResponseListener<ResultSet>() {
+                    @Override
+                    public void responseResult(StateMode mode, ResultSet resultData, boolean b, int i) {
 
+                    }
+                });
             }
-        });
+        } else {
+            QLog.i(this, "数据表不存在，没有可删除的数据");
+            listener.after(StateMode.WARN, null);
+        }
     }
 
     @Override
     public void updateData(final ResultListener<Integer> listener) {
-        String updateString = mySQLString.getUpdateString();
-        SQLRequest(Mode.UPDATE, updateString, new OnResponseListener<ResultSet>() {
-            @Override
-            public void responseResult(StateMode mode, ResultSet resultData, boolean b, int i) {
-                listener.after(mode, i);
-            }
-        });
+        if (isTab) {
+            String updateString = mySQLString.getUpdateString();
+            SQLRequest(Mode.UPDATE, updateString, new OnResponseListener<ResultSet>() {
+                @Override
+                public void responseResult(StateMode mode, ResultSet resultData, boolean b, int i) {
+                    listener.after(mode, i);
+                }
+            });
+        } else {
+            listener.after(StateMode.WARN, -1);
+        }
     }
 
     @Override
     public void selectData(SQLString.SelectMode mode, final ResultListener<List<DatabaseBase>> listener) {
-        String selectString = mySQLString.getSelectString(mode);
-        SQLRequest(Mode.SELECT, selectString, new OnResponseListener<ResultSet>() {
-            @Override
-            public void responseResult(StateMode mode, ResultSet resultData, boolean b, int i) {
-                Object tableClass = getDatabaseBase().getTableClass();
-                List<DatabaseBase> list = new ArrayList<DatabaseBase>();
-                List<Args> classArgs = mySQLString.getClassArgs();
-                try {
-                    while (resultData.next()) {
-                        Object o = ClassArgs.newInstance(getDatabaseBase().getTableClass().getClass());
-                        DatabaseBase base = new DatabaseBase(o);
-                        DatabaseDefaultArgs defaultArgs = base.getDefaultArgs();
-                        for (Args item : classArgs) {
-                            Object name = resultData.getObject(resultData.findColumn(item.getName()));
-                            Field fie = o.getClass().getDeclaredField(item.getName());
-                            fie.setAccessible(true);
-                            fie.set(o, name);
-                        }
-                        defaultArgs.setUniqueId(resultData.getString(resultData.findColumn(DatabaseDefaultArgs.UNId_ARG)));
-                        if (defaultArgs.isCreateTimeField()) {
-                            defaultArgs.setCreateTime(resultData.getString(resultData.findColumn(DatabaseDefaultArgs.CREATE_TIME)));
-                        }
-                        if (defaultArgs.isUpdateTimeField()) {
-                            defaultArgs.setUpdateTime(resultData.getString(resultData.findColumn(DatabaseDefaultArgs.UPDATE_TIME)));
-                        }
+        if (isTab) {
+            String selectString = mySQLString.getSelectString(mode);
+            SQLRequest(Mode.SELECT, selectString, new OnResponseListener<ResultSet>() {
+                @Override
+                public void responseResult(StateMode mode, ResultSet resultData, boolean b, int i) {
+                    Object tableClass = getDatabaseBase().getTableClass();
+                    List<DatabaseBase> list = new ArrayList<DatabaseBase>();
+                    List<Args> classArgs = mySQLString.getClassArgs();
+                    try {
+                        while (resultData.next()) {
+                            Object o = ClassArgs.newInstance(getDatabaseBase().getTableClass().getClass());
+                            DatabaseBase base = new DatabaseBase(o);
+                            DatabaseDefaultArgs defaultArgs = base.getDefaultArgs();
+                            for (Args item : classArgs) {
+                                Object name = resultData.getObject(resultData.findColumn(item.getName()));
+                                Field fie = o.getClass().getDeclaredField(item.getName());
+                                fie.setAccessible(true);
+                                fie.set(o, name);
+                            }
+                            defaultArgs.setUniqueId(resultData.getString(resultData.findColumn(DatabaseDefaultArgs.UNId_ARG)));
+                            if (defaultArgs.isCreateTimeField()) {
+                                defaultArgs.setCreateTime(resultData.getString(resultData.findColumn(DatabaseDefaultArgs.CREATE_TIME)));
+                            }
+                            if (defaultArgs.isUpdateTimeField()) {
+                                defaultArgs.setUpdateTime(resultData.getString(resultData.findColumn(DatabaseDefaultArgs.UPDATE_TIME)));
+                            }
 
-                        list.add(base);
+                            list.add(base);
+                        }
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    } catch (NoSuchFieldException e) {
+                        e.printStackTrace();
+                    } catch (IllegalAccessException e) {
+                        e.printStackTrace();
                     }
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                } catch (NoSuchFieldException e) {
-                    e.printStackTrace();
-                } catch (IllegalAccessException e) {
-                    e.printStackTrace();
+                    listener.after(mode, list);
                 }
-                listener.after(mode, list);
-            }
-        });
+            });
+        } else {
+            listener.after(StateMode.WARN, null);
+        }
     }
 
 
