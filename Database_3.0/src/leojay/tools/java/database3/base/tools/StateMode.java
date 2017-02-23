@@ -7,5 +7,14 @@ package leojay.tools.java.database3.base.tools;
  * @author leojay
  */
 public enum StateMode {
-    SUCCESS,ERROR,WARN, NONE, CONNECTION_ERROR
+    SUCCESS,ERROR,WARN, NONE, CONNECTION_ERROR;
+    private String state = "无";
+
+    public String getState() {
+        return state;
+    }
+
+    public void setState(String state) {
+        this.state = state;
+    }
 }

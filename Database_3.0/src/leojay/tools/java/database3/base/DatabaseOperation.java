@@ -1,13 +1,9 @@
 package leojay.tools.java.database3.base;
 
-import leojay.tools.java.class_serialization.ClassArgs;
-import leojay.tools.java.class_serialization.ReflectionUtils;
-import leojay.tools.java.database3.DatabaseObjectFactory;
 import leojay.tools.java.database3.base.tools.DatabaseBase;
 import leojay.tools.java.database3.base.tools.ResultListener;
 import leojay.tools.java.database3.base.tools.StateMode;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -57,52 +53,51 @@ public abstract class DatabaseOperation {
         updateData(nullListener);
     }
 
-    public abstract void selectData(final SQLString.SelectMode mode, final ResultListener<List<DatabaseBase>> listener);
+    public abstract void selectData(final SQLString.SelectMode mode, String[] whereArgs, final ResultListener<List<DatabaseBase>> listener);
 
-    public void selectData(final ResultListener<List<DatabaseBase>> listener) {
-        selectData(SQLString.SelectMode.OR, listener);
+    public void selectData(String[] whereArgs, final ResultListener<List<DatabaseBase>> listener) {
+        selectData(SQLString.SelectMode.OR, whereArgs, listener);
     }
 
-    public <T extends DatabaseObjectFactory> void selectDataForClass(T t, final SQLString.SelectMode mode, final ResultListener<List<T>> listener) {
+    public void selectData(final SQLString.SelectMode mode, final ResultListener<List<DatabaseBase>> listener) {
+        selectData(mode, null, listener);
+    }
 
-        selectData(mode, new ResultListener<List<DatabaseBase>>() {
+    public void selectData(final ResultListener<List<DatabaseBase>> listener) {
+        selectData(SQLString.SelectMode.OR, null, listener);
+    }
+
+    public <T> void selectDataForClass(final Class<T> t, String[] whereArgs, final SQLString.SelectMode mode, final ResultListener<List<DatabaseBase<T>>> listener) {
+
+        selectData(mode, whereArgs, new ResultListener<List<DatabaseBase>>() {
             @Override
             public void after(StateMode mode, List<DatabaseBase> resultArg) {
-                List<T> list = new ArrayList<T>();
-
+                List<DatabaseBase<T>> list = new ArrayList<DatabaseBase<T>>();
                 for (DatabaseBase base : resultArg) {
-                    //将要被添加数据的类
-                    T t = (T) ClassArgs.newInstance(getDatabaseBase().getTableClass().getClass());
-                    //数据源
                     Object tableClass = base.getTableClass();
-
-                    //两种方式
-                    // 1、通过自定义类获取该类的参数集合。
-//                    List<Args> tableClassArgsList = getDatabaseBase().getTableClassArgsList();
-//                    for (Args args : tableClassArgsList) {
-//                        Object fieldValue = ReflectionUtils.getFieldValue(tableClass, args.getName());
-//                        ReflectionUtils.setFieldValue(t, args.getName(), fieldValue);
-//                    }
-                    // 2、获取其参数的对象组
-                    Field[] declaredFields = t.getClass().getDeclaredFields();
-                    //设置基础数据，主键、写入和更改时间
-                    for (Field field : declaredFields) {
-                        Object fieldValue = ReflectionUtils.getFieldValue(tableClass, field.getName());
-                        ReflectionUtils.setFieldValue(t, field.getName(), fieldValue);
+                    if (tableClass.getClass().equals(t)) {
+                        DatabaseBase<T> databaseBase = (DatabaseBase<T>) base;
+                        list.add(databaseBase);
+                    } else {
+                        mode = StateMode.ERROR;
+                        mode.setState("数据中返回的类的数据类型与本方法设置的数据类型不匹配！");
                     }
-                    // 3、直接获取（不知是否可行）
-//                    t = (T) base.getTableClass();
-
-                    t.getOperation().getDatabaseBase().setDefaultArgs(base.getDefaultArgs());
-                    list.add(t);
                 }
                 listener.after(mode, list);
             }
         });
     }
 
-    public <T extends DatabaseObjectFactory> void selectDataForClass(T t, final ResultListener<List<T>> listener) {
-        selectDataForClass(t, SQLString.SelectMode.OR, listener);
+    public <T> void selectDataForClass(Class<T> t, String[] whereArgs, final ResultListener<List<DatabaseBase<T>>> listener) {
+        selectDataForClass(t, whereArgs, SQLString.SelectMode.OR, listener);
+    }
+
+    public <T> void selectDataForClass(Class<T> t, final SQLString.SelectMode mode, final ResultListener<List<DatabaseBase<T>>> listener) {
+        selectDataForClass(t, null, mode, listener);
+    }
+
+    public <T> void selectDataForClass(Class<T> t, final ResultListener<List<DatabaseBase<T>>> listener) {
+        selectDataForClass(t, null, SQLString.SelectMode.OR, listener);
     }
 
     public DatabaseBase getDatabaseBase() {

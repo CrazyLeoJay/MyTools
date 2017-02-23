@@ -85,7 +85,11 @@ public abstract class SQLString {
 
     protected abstract String getDeleteString();
 
-    protected abstract String getSelectString(SelectMode mode);
+    protected abstract String getSelectString(SelectMode mode, String[] args);
+
+    public String getSelectString(SelectMode mode){
+        return getSelectString(mode, null);
+    }
 
     protected abstract String getUpdateString();
 
@@ -94,7 +98,7 @@ public abstract class SQLString {
     }
 
     public enum SelectMode {
-        OR, AND
+        OR, AND;
     }
 
     /**

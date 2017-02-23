@@ -188,9 +188,8 @@ public final class MySQLString extends SQLString {
         return sql;
     }
 
-
     @Override
-    protected String getSelectString(SelectMode mode) {
+    protected String getSelectString(SelectMode mode, String[] whereArgs) {
         String sql = "SELECT * FROM `" + tableObject.getTableName() + "` WHERE ";
         String where = "";
         String way = " AND ";
@@ -228,7 +227,20 @@ public final class MySQLString extends SQLString {
             where += " `" + DatabaseDefaultArgs.UPDATE_TIME + "`='" + tableObject.getDefaultArgs().getUpdateTime() + "' ";
             i++;
         }
+
+        if (whereArgs != null) for (String item : whereArgs) {
+            String arg = " AND ";
+            if (mode == SelectMode.OR) arg = " OR ";
+//            if (mode == SelectMode.AND) arg = "AND";
+            if (i != 0) {
+                where += arg + item;
+            } else {
+                where += item;
+            }
+            i++;
+        }
         if (i == 0) where = "1";
+        QLog.i(this, "即将执行的SQL语句 ： " + sql + where);
         return sql + where;
     }
 

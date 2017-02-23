@@ -15,7 +15,7 @@ import java.util.List;
  * @author leojay
  */
 public class MySQLManageTest {
-    BTest bTest;
+    private BTest bTest;
 
     @Before
     public void setUp() throws Exception {

@@ -1,9 +1,9 @@
 package leojay.pack.java.database3.mysql;
 
 import leojay.pack.java.database3.mysql.tools.MySQLConnection;
-import leojay.pack.java.database3.mysql.tools.MySQLMyConfig;
 import leojay.pack.java.database3.mysql.tools.MySQLOperation;
 import leojay.tools.java.database3.DatabaseObjectFactory;
+import leojay.tools.java.database3.base.DatabaseConfig;
 import leojay.tools.java.database3.base.DatabaseConnection;
 import leojay.tools.java.database3.base.DatabaseOperation;
 import leojay.tools.java.database3.base.tools.DatabaseBase;
@@ -14,17 +14,7 @@ import leojay.tools.java.database3.base.tools.DatabaseBase;
  *
  * @author leojay
  */
-public class MySqlObjectFactory extends DatabaseObjectFactory {
-
-    private String url;
-    private String configName;
-
-    private MySQLMyConfig config;
-
-    public MySqlObjectFactory(String url, String configName) {
-        this.url = url;
-        this.configName = configName;
-    }
+public abstract class MySqlObjectFactory extends DatabaseObjectFactory {
 
     @Override
     protected DatabaseOperation setOperation(DatabaseBase base) {
@@ -44,10 +34,5 @@ public class MySqlObjectFactory extends DatabaseObjectFactory {
         return MySqlObjectFactory.class;
     }
 
-    private MySQLMyConfig getConfig() {
-        if (null == config) config = new MySQLMyConfig(url, configName);
-        return config;
-    }
-
-
+    protected abstract DatabaseConfig getConfig();
 }

@@ -28,7 +28,7 @@ public final class MySQLMyConfig implements DatabaseConfig {
      * @param url  配置文件地址，绝对地址
      * @param name 配置文件名称，若为空，则使用默认：dbconfig
      */
-    public MySQLMyConfig(final String url, final String name) {
+    public MySQLMyConfig(final ReadProperties.InputMode mode, final String url, final String name) {
         ReadProperties dbconfig = new ReadProperties(new ReadProperties.InitConfig() {
             @Override
             public String FileName() {
@@ -46,7 +46,7 @@ public final class MySQLMyConfig implements DatabaseConfig {
 
             @Override
             public ReadProperties.InputMode UrlMode() {
-                return null;
+                return mode;
             }
 
             @Override
@@ -63,6 +63,17 @@ public final class MySQLMyConfig implements DatabaseConfig {
             }
 
         });
+
+        init(dbconfig);
+    }
+
+    public MySQLMyConfig(final String url, final String name) {
+        this(null, url, name);
+    }
+
+
+    private void init(ReadProperties dbconfig) {
+        if (dbconfig == null) return;
         isHaveConfig = true;
         DB_Driver = dbconfig.getProperty("DB_Driver");
         DB_name = dbconfig.getProperty("DB_name");
@@ -73,7 +84,6 @@ public final class MySQLMyConfig implements DatabaseConfig {
                 "?useUnicode=true&characterEncoding=" + DB_CHARACTER;
         USER_NAME = dbconfig.getProperty("DB_USER_NAME");
         PASSWORD = dbconfig.getProperty("DB_PASSWORD");
-
     }
 
     /**

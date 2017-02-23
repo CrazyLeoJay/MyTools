@@ -58,11 +58,11 @@ public abstract class DatabaseManage<T> {
         return setOperation(getBase());
     }
 
-    private DatabaseBase base;
+    private DatabaseBase<T> base;
 
-    public DatabaseBase getBase() {
+    public DatabaseBase<T> getBase() {
         if (base == null) {
-            base = new DatabaseBase(tableClass);
+            base = new DatabaseBase<T>(tableClass);
             base.setBaseObject(getBaseObject());
         }
         return base;

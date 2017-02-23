@@ -12,24 +12,24 @@ import java.util.List;
  *
  * @author leojay
  */
-public class DatabaseBase {
+public class DatabaseBase<T> {
     private static final String QLOG_KEY = "DatabaseBase.class";
     private DatabaseDefaultArgs defaultArgs = null;
-    private Object tableClass;
+    private T tableClass;
 
     private Class<?> baseObject = Object.class;
 
     //数据表名称
     private String tableName = null;
     //顶级前缀
-    private String table_prefix = null;
+    private String tablePrefix = null;
     //二级前缀
-    private String second_tab_prefix = null;
+    private String tableSecondPrefix = null;
 
     //主键模式
     private IDMode idMode = IDMode.MODE_AUTO;
 
-    public DatabaseBase(Object tableClass) {
+    public DatabaseBase(T tableClass) {
         this.tableClass = tableClass;
     }
 
@@ -71,28 +71,28 @@ public class DatabaseBase {
             QLog.e(this, QLOG_KEY, e.getMessage());
             e.printStackTrace();
         }
-        if (table_prefix != null) {
-            this.tableName = table_prefix + "_" + (second_tab_prefix == null ? "" : second_tab_prefix + "_") + tableName;
+        if (tablePrefix != null) {
+            this.tableName = tablePrefix + "_" + (tableSecondPrefix == null ? "" : tableSecondPrefix + "_") + tableName;
         } else {
             QLog.w(this, QLOG_KEY, "没有设置前缀名！！！");
             this.tableName = tableName;
         }
     }
 
-    public String getTable_prefix() {
-        return table_prefix;
+    public String getTablePrefix() {
+        return tablePrefix;
     }
 
-    public void setTable_prefix(String table_prefix) {
-        this.table_prefix = table_prefix;
+    public void setTablePrefix(String tablePrefix) {
+        this.tablePrefix = tablePrefix;
     }
 
-    public String getSecond_tab_prefix() {
-        return second_tab_prefix;
+    public String getTableSecondPrefix() {
+        return tableSecondPrefix;
     }
 
-    public void setSecond_tab_prefix(String second_tab_prefix) {
-        this.second_tab_prefix = second_tab_prefix;
+    public void setTableSecondPrefix(String tableSecondPrefix) {
+        this.tableSecondPrefix = tableSecondPrefix;
     }
 
     public DatabaseDefaultArgs getDefaultArgs() {
@@ -104,11 +104,11 @@ public class DatabaseBase {
         this.defaultArgs = defaultArgs;
     }
 
-    public Object getTableClass() {
+    public T getTableClass() {
         return tableClass;
     }
 
-    public void setTableClass(Object tableClass) {
+    public void setTableClass(T tableClass) {
         this.tableClass = tableClass;
     }
 

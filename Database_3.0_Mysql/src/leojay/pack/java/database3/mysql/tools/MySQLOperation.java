@@ -253,13 +253,18 @@ public final class MySQLOperation extends DatabaseOperation {
     }
 
     @Override
-    public void selectData(SQLString.SelectMode mode, final ResultListener<List<DatabaseBase>> listener) {
+    public void selectData(SQLString.SelectMode mode, final String[] whereArgs, final ResultListener<List<DatabaseBase>> listener) {
         if (isTab) {
-            String selectString = mySQLString.getSelectString(mode);
+            String selectString;
+            if (whereArgs == null) {
+                selectString = mySQLString.getSelectString(mode);
+            }else {
+                selectString = mySQLString.getSelectString(mode, whereArgs);
+            }
             SQLRequest(Mode.SELECT, selectString, new OnResponseListener<ResultSet>() {
                 @Override
                 public void responseResult(StateMode mode, ResultSet resultData, boolean b, int i) {
-                    Object tableClass = getDatabaseBase().getTableClass();
+//                    Object tableClass = getDatabaseBase().getTableClass();
                     List<DatabaseBase> list = new ArrayList<DatabaseBase>();
                     List<Args> classArgs = mySQLString.getClassArgs();
                     try {
@@ -280,7 +285,6 @@ public final class MySQLOperation extends DatabaseOperation {
                             if (defaultArgs.isUpdateTimeField()) {
                                 defaultArgs.setUpdateTime(resultData.getString(resultData.findColumn(DatabaseDefaultArgs.UPDATE_TIME)));
                             }
-
                             list.add(base);
                         }
                     } catch (SQLException e) {

@@ -1,5 +1,7 @@
 package leojay.pack.java.database3.mysql;
 
+import leojay.tools.java.database3.base.tools.DatabaseBase;
+import leojay.tools.java.database3.base.tools.DatabaseDefaultArgs;
 import leojay.tools.java.database3.base.tools.ResultListener;
 import leojay.tools.java.database3.base.tools.StateMode;
 import org.junit.Before;
@@ -45,7 +47,8 @@ public class MySqlObjectFactoryTest {
     @Test
     public void selectTest() throws Exception {
         aTest = new ATest();
-//        aTest.start();
+        aTest.start();
+
 //        aTest.getOperation().selectData(new ResultListener<List<DatabaseBase>>() {
 //            @Override
 //            public void after(StateMode mode, List<DatabaseBase> resultArg) {
@@ -62,11 +65,16 @@ public class MySqlObjectFactoryTest {
 //            }
 //        });
 
-        aTest.getOperation().selectDataForClass(aTest, new ResultListener<List<ATest>>() {
+        String[] args = {DatabaseDefaultArgs.UNId_ARG + "> 0"};
+        aTest.getOperation().selectDataForClass(ATest.class, args, new ResultListener<List<DatabaseBase<ATest>>>() {
             @Override
-            public void after(StateMode mode, List<ATest> resultArg) {
-                if (mode == StateMode.SUCCESS) for (ATest item: resultArg){
-                    System.out.println(item.getOperation().getDatabaseBase().getDefaultArgs().getUniqueId());
+            public void after(StateMode mode, List<DatabaseBase<ATest>> resultArg) {
+
+                if (mode == StateMode.SUCCESS) for (DatabaseBase<ATest> base : resultArg) {
+                    ATest item = base.getTableClass();
+                    System.out.println(base.getDefaultArgs().getUniqueId());
+                    System.out.println(base.getDefaultArgs().getUpdateTime());
+                    System.out.println(base.getDefaultArgs().getCreateTime());
                     System.out.println(item.getName());
                     System.out.println(item.getB());
                 }
