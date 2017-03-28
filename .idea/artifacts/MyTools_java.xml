@@ -1,8 +1,0 @@
-<component name="ArtifactManager">
-  <artifact type="jar" build-on-make="true" name="MyTools_java">
-    <output-path>$PROJECT_DIR$/out/artifacts/MyTools_java</output-path>
-    <root id="archive" name="MyTools_java.jar">
-      <element id="artifact" artifact-name="MyTools_all" />
-    </root>
-  </artifact>
-</component>

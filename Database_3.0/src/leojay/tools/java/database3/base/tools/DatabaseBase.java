@@ -130,7 +130,7 @@ public class DatabaseBase<T> {
     }
 
     public List<Args> getDefaultArgsList() {
-        return ClassArgs.getSingleClassArgs(tableClass);
+        return ClassArgs.getSingleClassArgs(defaultArgs);
     }
 
     public List<Args> getTableClassArgsList() {
