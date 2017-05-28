@@ -4,6 +4,7 @@ import leojay.tools.java.QLog;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -30,7 +31,7 @@ public final class ClassArgs {
      *                    则提取出此类中对象object的相应参数。
      * @return 参数组
      */
-    private static List<Args> getSingleClassArgs(final Object object, final Class<?> objectClass) {
+    private static List<Args> getSingleClassArgs(final Object object, final Class<?> objectClass, String... excludeString) {
         if (object == null) return null;
         List<Args> results = new ArrayList<Args>();
         Class<?> aClass;
@@ -43,10 +44,16 @@ public final class ClassArgs {
         String simpleClassName = aClass.getSimpleName();
 
         Field[] declaredFields = aClass.getDeclaredFields();
+
         if (declaredFields.length > 0) {
+            List<String> list = null;
+            if (excludeString != null && excludeString.length > 0) {
+                list = new ArrayList<String>(Arrays.asList(excludeString));
+            }
             for (Field f_item : declaredFields) {
                 f_item.setAccessible(true);
                 String name = f_item.getName();
+                if (list != null && list.contains(name)) continue;
 //                if (name.contains("$")) continue;
                 Args arg = new Args();
                 arg.setName(name);
@@ -69,8 +76,8 @@ public final class ClassArgs {
      * @param object 要操作的对象
      * @return 参数组
      */
-    public static List<Args> getSingleClassArgs(final Object object) {
-        return getSingleClassArgs(object, null);
+    public static List<Args> getSingleClassArgs(final Object object, String... excludeString) {
+        return getSingleClassArgs(object, null, excludeString);
     }
 
     /**
@@ -79,9 +86,9 @@ public final class ClassArgs {
      * @param aClass 要操作的对象的类
      * @return 参数组
      */
-    public static List<Args> getSingleClassArgs(final Class<?> aClass) {
+    public static List<Args> getSingleClassArgs(final Class<?> aClass, String... excludeString) {
         Object o = newInstance(aClass);
-        return getSingleClassArgs(o);
+        return getSingleClassArgs(o, excludeString);
     }
 
     /**
@@ -91,7 +98,7 @@ public final class ClassArgs {
      * @param baseObject 截止父类，若为空默认为Object，若不为父类抛出异常
      * @return 参数组
      */
-    public static List<Args> getThisAndSupersClassArgs(final Object object, Class<?> baseObject) {
+    public static List<Args> getThisAndSupersClassArgs(final Object object, Class<?> baseObject, String... excludeString) {
         if (null == object) return null;
         if (null == baseObject) baseObject = Object.class;
         //判断父类是否为空
@@ -110,7 +117,7 @@ public final class ClassArgs {
             Class<?> fClass = object.getClass();
             String names = fClass.getName();
             while (!names.equals(baseObject.getName())) {
-                List<Args> singleClassArgs = getSingleClassArgs(object, fClass);
+                List<Args> singleClassArgs = getSingleClassArgs(object, fClass, excludeString);
                 results.addAll(singleClassArgs);
                 fClass = fClass.getSuperclass();
                 names = fClass.getName();
@@ -126,8 +133,8 @@ public final class ClassArgs {
      * @param object 要操作的对象
      * @return 参数组
      */
-    public static List<Args> getThisAndSupersClassArgs(final Object object) {
-        return getThisAndSupersClassArgs(object, null);
+    public static List<Args> getThisAndSupersClassArgs(final Object object, String... excludeString) {
+        return getThisAndSupersClassArgs(object, null, excludeString);
     }
 
     /**
@@ -137,8 +144,8 @@ public final class ClassArgs {
      * @param baseObject 截止父类，若为空默认为Object，若不为父类抛出异常
      * @return 参数组
      */
-    public static List<Args> getThisAndSupersClassArgs(final Class<?> aClass, Class<?> baseObject) {
-        return getThisAndSupersClassArgs(newInstance(aClass), baseObject);
+    public static List<Args> getThisAndSupersClassArgs(final Class<?> aClass, Class<?> baseObject, String... excludeString) {
+        return getThisAndSupersClassArgs(newInstance(aClass), baseObject, excludeString);
     }
 
     /**
@@ -147,8 +154,8 @@ public final class ClassArgs {
      * @param aClass 要操作的对象的类
      * @return 参数组
      */
-    public static List<Args> getThisAndSupersClassArgs(final Class<?> aClass) {
-        return getThisAndSupersClassArgs(aClass, null);
+    public static List<Args> getThisAndSupersClassArgs(final Class<?> aClass, String... excludeString) {
+        return getThisAndSupersClassArgs(aClass, null, excludeString);
     }
 
     /**

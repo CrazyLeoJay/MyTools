@@ -20,25 +20,26 @@ public class ClassArgsTest {
         apple.name = "hello apple";
         List<Args> singleClassArgs = ClassArgs.getSingleClassArgs(apple);
         for (Args item : singleClassArgs) {
-            System.out.println(item.getClassName() + " >>> " + item.getName()+ " ..." + item.getValue());
+            System.out.println(item.getClassName() + " >>> " + item.getName() + " ..." + item.getValue());
         }
     }
 
     @Test
-    public void getSingleClassArgs2() throws Exception{
+    public void getSingleClassArgs2() throws Exception {
         //获取类的所有参数
         List<Args> singleClassArgs = ClassArgs.getSingleClassArgs(B.class);
         for (Args item : singleClassArgs) {
             System.out.println(item.getClassName() + " >>> " + item.getName() + " ..." + item.getValue());
         }
     }
+
     @Test
     public void getThisAndSupersClassArgs() throws Exception {
         //获取类及其父类的所有参数和值
         B apple = new B();
         apple.name = "hello apple";
         Class<? extends B> aClass = apple.getClass();
-        List<Args> thisAndSupersClassArgs = ClassArgs.getThisAndSupersClassArgs(apple, null);
+        List<Args> thisAndSupersClassArgs = ClassArgs.getThisAndSupersClassArgs(apple, (Class) null);
         for (Args item : thisAndSupersClassArgs) {
             System.out.println(item.getClassName() + " >>> " + item.getName() + " ..." + item.getValue());
         }
@@ -47,7 +48,7 @@ public class ClassArgsTest {
     @Test
     public void getThisAndSupersClassArgs1() throws Exception {
         //获取类及其父类的所有参数和值
-        List<Args> thisAndSupersClassArgs = ClassArgs.getThisAndSupersClassArgs(B.class, null);
+        List<Args> thisAndSupersClassArgs = ClassArgs.getThisAndSupersClassArgs(B.class, (Class<?>) null);
         for (Args item : thisAndSupersClassArgs) {
             System.out.println(item.getClassName() + " >>> " + item.getName() + " ..." + item.getValue());
         }
